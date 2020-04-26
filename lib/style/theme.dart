@@ -30,6 +30,12 @@ const kTitleTextstyle = TextStyle(
   fontWeight: FontWeight.bold,
 );
 
+const kAppBarstyle = TextStyle(
+  fontSize: 20,
+  color: kBackgroundColor,
+  fontWeight: FontWeight.bold,
+);
+
   const primaryGradient = const LinearGradient(
     colors: const [loginGradientStart, loginGradientEnd],
     stops: const [0.0, 1.0],

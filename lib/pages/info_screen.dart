@@ -56,6 +56,8 @@ class _InfoScreenState extends State<InfoScreen> {
         logoutCallback: widget._signOut,
       ),
       appBar: new AppBar(
+        title: Text('About Covid', style: kAppBarstyle,),
+        centerTitle: true,
         iconTheme: new IconThemeData(color: Colors.green),
         elevation: 0.0,
         flexibleSpace: Container(
@@ -77,7 +79,7 @@ class _InfoScreenState extends State<InfoScreen> {
           children: <Widget>[
             MyHeader(
               image: "assets/icons/coronadr.svg",
-              textTop: "Get to know",
+              textTop: "Get to know more",
               textBottom: "About Covid-19.",
               offset: offset,
             ),

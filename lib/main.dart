@@ -1,3 +1,5 @@
+import 'package:covid19/pages/help.dart';
+import 'package:covid19/pages/map.dart';
 import 'package:covid19/pages/profile.dart';
 import 'package:covid19/pages/rootpage.dart';
 import 'package:covid19/services/authentication.dart';
@@ -16,6 +18,8 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
         routes: {
           '/root': (context) => RootPage(),
+          '/map' : (context) => MapPage(),
+          '/help': (context) => HelpPage(),
           '/profile': (context) => UserProfil(onSignOut: () {},),
         },
       theme: ThemeData(

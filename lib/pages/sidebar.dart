@@ -59,49 +59,49 @@ class _SideBarState extends State<SideBar> {
       child: ListView(
         children: <Widget>[
           new UserAccountsDrawerHeader(
-                  accountEmail: new Text(
-                    userMail ?? '',
-                    style: TextStyle(fontSize: 15.0),
-                  ),
-                  accountName: Row(
-                    children: <Widget>[
-                      new Text(
-                        _fullNames ?? '',
-                        style: TextStyle(fontSize: 15.0),
-                      ),
-                    ],
-                  ),
-                  currentAccountPicture: Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: kPrimaryColor,
-                        width: 4,
-                      ),
-                    ),
-                    child: new GestureDetector(
-                      child: image != null
-                          ? Center(
-                              child: new CircleAvatar(
-                                backgroundImage: new NetworkImage(image),
-                                maxRadius: 70.0,
-                                minRadius: 60.0,
-                              ),
-                            )
-                          : CircleAvatar(
-                              child: Image.asset('assets/images/profile.png'),
-                              minRadius: 60,
-                              maxRadius: 93,
-                            ),
-                      onTap: () => print("This is your current account."),
-                    ),
-                  ),
-                  decoration: new BoxDecoration(
-                      image: new DecorationImage(
-                          image: new NetworkImage(
-                              "https://img00.deviantart.net/35f0/i/2015/018/2/6/low_poly_landscape__the_river_cut_by_bv_designs-d8eib00.jpg"),
-                          fit: BoxFit.fill)),
+            accountEmail: new Text(
+              userMail ?? '',
+              style: TextStyle(fontSize: 15.0),
+            ),
+            accountName: Row(
+              children: <Widget>[
+                new Text(
+                  _fullNames ?? '',
+                  style: TextStyle(fontSize: 15.0),
                 ),
+              ],
+            ),
+            currentAccountPicture: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: kPrimaryColor,
+                  width: 4,
+                ),
+              ),
+              child: new GestureDetector(
+                child: image != null
+                    ? Center(
+                        child: new CircleAvatar(
+                          backgroundImage: new NetworkImage(image),
+                          maxRadius: 70.0,
+                          minRadius: 60.0,
+                        ),
+                      )
+                    : CircleAvatar(
+                        child: Image.asset('assets/images/profile.png'),
+                        minRadius: 60,
+                        maxRadius: 93,
+                      ),
+                onTap: () => print("This is your current account."),
+              ),
+            ),
+            decoration: new BoxDecoration(
+                image: new DecorationImage(
+                    image: new NetworkImage(
+                        "https://img00.deviantart.net/35f0/i/2015/018/2/6/low_poly_landscape__the_river_cut_by_bv_designs-d8eib00.jpg"),
+                    fit: BoxFit.fill)),
+          ),
           ListTile(
             leading: Icon(Icons.home, color: kPrimaryColor),
             title: Text('Home', style: TextStyle(fontWeight: FontWeight.bold)),
@@ -129,6 +129,16 @@ class _SideBarState extends State<SideBar> {
           ),
           divider(),
           ListTile(
+            leading: Icon(Icons.map, color: kPrimaryColor),
+            title: Text('Map',
+                style: TextStyle(fontWeight: FontWeight.bold)),
+            onTap: () => {
+              Navigator.of(context).pop(),
+              Navigator.pushReplacementNamed(context, '/map'),
+            },
+          ),
+          divider(),
+          ListTile(
             leading: Icon(Icons.person, color: kPrimaryColor),
             title: Text('My Account',
                 style: TextStyle(fontWeight: FontWeight.bold)),
@@ -139,22 +149,12 @@ class _SideBarState extends State<SideBar> {
           ),
           divider(),
           ListTile(
-            leading: Icon(Icons.verified_user, color: kPrimaryColor),
-            title: Text('My Interview List',
+            leading: Icon(Icons.help, color: kPrimaryColor),
+            title: Text('Get in Touch',
                 style: TextStyle(fontWeight: FontWeight.bold)),
             onTap: () => {
               Navigator.of(context).pop(),
-              Navigator.pushReplacementNamed(context, '/interview'),
-            },
-          ),
-          divider(),
-          ListTile(
-            leading: Icon(Icons.local_mall, color: kPrimaryColor),
-            title: Text('Employees I\'ve Hired',
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            onTap: () => {
-              Navigator.of(context).pop(),
-              Navigator.pushReplacementNamed(context, '/hired'),
+              Navigator.pushReplacementNamed(context, '/help'),
             },
           ),
           divider(),

@@ -429,109 +429,7 @@ class _UserProfilState extends State<UserProfil> {
       );
     }
 
-    Widget postalCode() {
-      return ListTile(
-        leading: Icon(
-          FontAwesomeIcons.box,
-          color: Colors.yellow,
-          size: 35,
-        ),
-        title: Text(
-          "Postal Code",
-          style: TextStyle(color: Colors.black, fontSize: 18.0),
-        ),
-        trailing: IconButton(
-          icon: Icon(Icons.edit, color: Colors.yellow),
-          onPressed: () {
-            showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(20.0))),
-                    content: Form(
-                      key: _formKey,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Container(
-                                padding: EdgeInsets.only(
-                                    left: 10.0, right: 10.0, top: 0.0),
-                                child: DropDownFormField(
-                                  titleText: 'Select Postal Office',
-                                  hintText: 'Please choose one',
-                                  validator: (value) {
-                                    if (value == null) {
-                                      return "Select the Postal Code";
-                                    }
-                                    return null;
-                                  },
-                                  value: _postalCode,
-                                  onSaved: (value) {
-                                    setState(() {
-                                      _postalCode = value;
-                                    });
-                                  },
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _postalCode = value;
-                                    });
-                                  },
-                                  dataSource: [
-                                    {
-                                      "display": "10100",
-                                      "value": "10100",
-                                    },
-                                    {
-                                      "display": "10101",
-                                      "value": "10101",
-                                    },
-                                    {
-                                      "display": "10102",
-                                      "value": "10102",
-                                    },
-                                    {"display": "10103", "value": "10103"}
-                                  ],
-                                  textField: 'display',
-                                  valueField: 'value',
-                                )),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: RaisedButton(
-                              color: Theme.of(context).accentColor,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(20.0))),
-                              child: Text(
-                                "Validate",
-                                style: TextStyle(color: Colors.black),
-                              ),
-                              onPressed: () {
-                                if (_formKey.currentState.validate()) {
-                                  _formKey.currentState.save();
-                                  crudObj.createOrUpdateUserData(
-                                      {'postalCode': this._postalCode});
-                                  Navigator.pop(context);
-                                }
-                              },
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  );
-                });
-          },
-        ),
-        subtitle: Text(
-          userData['postalCode'],
-          style: TextStyle(fontSize: 15.0, color: Colors.black),
-        ),
-      );
-    }
+   
 
     Widget birth() {
       return ListTile(
@@ -623,8 +521,6 @@ class _UserProfilState extends State<UserProfil> {
                                     mail(),
                                     divider(),
                                     address(),
-                                    divider(),
-                                    postalCode(),
                                     divider(),
                                     birth(),
                                     divider(),

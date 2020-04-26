@@ -49,27 +49,10 @@ class CrudMethods {
         bool _myAdmin = userDocument["admin"];
   }
   getData() async {
-    FirebaseUser user = await FirebaseAuth.instance.currentUser();
-        var userDocument = await Firestore.instance.collection('user').document(user.uid).get();
-        String _myAddress = userDocument["address"];
-        String _myPcode = userDocument["postalCode"];
-    return Firestore.instance.collection('letters').where("destination Postal Code", isEqualTo: _myPcode).snapshots();
+    // FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    //     var userDocument = await Firestore.instance.collection('user').document(user.uid).get();
+    return Firestore.instance.collection('letters').snapshots();
   }
-   getSData() async {
-    FirebaseUser user = await FirebaseAuth.instance.currentUser();
-        var userDocument = await Firestore.instance.collection('user').document(user.uid).get();
-        String _myAddress = userDocument["address"];
-        String _myPcode = userDocument["postalCode"];
-    return Firestore.instance.collection('letters').where("source Box", isEqualTo: _myAddress).snapshots();
-  }
-   getRData() async {
-    FirebaseUser user = await FirebaseAuth.instance.currentUser();
-        var userDocument = await Firestore.instance.collection('user').document(user.uid).get();
-        String _myAddress = userDocument["address"];
-        String _myPcode = userDocument["postalCode"];
-    return Firestore.instance.collection('letters').where("destination Box", isEqualTo: _myAddress).snapshots();
-  }
-
   getProfile() async {
     return Firestore.instance.collection('profile').snapshots();
   }

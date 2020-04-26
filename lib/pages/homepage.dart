@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:covid19/pages/sidebar.dart';
 import 'package:covid19/services/authentication.dart';
+import 'package:covid19/services/crud.dart';
 import 'package:covid19/style/theme.dart';
 import 'package:covid19/widgets/counter.dart';
 import 'package:covid19/widgets/my_header.dart';
@@ -29,6 +31,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final controller = ScrollController();
+  CrudMethods crudObj = new CrudMethods();
   double offset = 0;
 
   @override
@@ -37,7 +40,6 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     controller.addListener(onScroll);
   }
-
   @override
   void dispose() {
     // TODO: implement dispose
@@ -58,6 +60,8 @@ class _HomePageState extends State<HomePage> {
         logoutCallback: widget._signOut,
       ),
       appBar: new AppBar(
+        title: Text('Home', style: kAppBarstyle,),
+        centerTitle: true,
         iconTheme: new IconThemeData(color: Colors.green),
         elevation: 0.0,
         flexibleSpace: Container(
@@ -151,40 +155,7 @@ class _HomePageState extends State<HomePage> {
                     ],
                   ),
                   SizedBox(height: 20),
-                  Container(
-                    padding: EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          offset: Offset(0, 4),
-                          blurRadius: 30,
-                          color: kShadowColor,
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Counter(
-                          color: kInfectedColor,
-                          number: 296,
-                          title: "Infected",
-                        ),
-                        Counter(
-                          color: kDeathColor,
-                          number: 14,
-                          title: "Deaths",
-                        ),
-                        Counter(
-                          color: kRecovercolor,
-                          number: 74,
-                          title: "Recovered",
-                        ),
-                      ],
-                    ),
-                  ),
+                  cases(),
                   SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -229,6 +200,52 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget cases(){
+    return StreamBuilder(
+      stream:  Firestore.instance.collection('cases').document('hNZISn2aVmS6Ow5Ipye3').snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return CircularProgressIndicator();
+        }
+        var userData = snapshot.data;
+        return Container(
+                    padding: EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          offset: Offset(0, 4),
+                          blurRadius: 30,
+                          color: kShadowColor,
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Counter(
+                          color: kInfectedColor,
+                          number: userData['infected'],
+                          title: "Infected",
+                        ),
+                        Counter(
+                          color: kDeathColor,
+                          number: userData['dead'],
+                          title: "Deaths",
+                        ),
+                        Counter(
+                          color: kRecovercolor,
+                          number: userData['recovered'],
+                          title: "Recovered",
+                        ),
+                      ],
+                    ),
+                  );
+      },
     );
   }
 }
