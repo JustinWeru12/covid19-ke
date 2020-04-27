@@ -74,7 +74,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage>
             email: _email,
             phone: "",
             picture:
-                "https://firebasestorage.googleapis.com/v0/b/lynight-53310.appspot.com/o/profilePics%2Fbloon_pics.jpg?alt=media&token=ab6c1537-9b1c-4cb4-b9d6-2e5fa9c7cb46",
+                "https://firebasestorage.googleapis.com/v0/b/covid19-ke-80e90.appspot.com/o/IMG_-oxvq7.jpg?alt=media&token=b8d2972a-e54c-49ff-8c4c-c869bd9d9592",
             address: "",
             postalCode: "",
             dob: dob,

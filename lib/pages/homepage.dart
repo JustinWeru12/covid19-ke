@@ -33,16 +33,18 @@ class _HomePageState extends State<HomePage> {
   final controller = ScrollController();
   CrudMethods crudObj = new CrudMethods();
   double offset = 0;
+  String listVal = 'Kenya';
+  int dead, infected, recovered;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     controller.addListener(onScroll);
   }
+
   @override
   void dispose() {
-    // TODO: implement dispose
     controller.dispose();
     super.dispose();
   }
@@ -53,6 +55,27 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  String validateDeaths(String value) {
+    if (int.tryParse(value) < dead)
+      return 'The number can only remain the same or increase\nplease verify the value';
+    else
+      return null;
+  }
+
+  String validateInfected(String value) {
+    if (int.tryParse(value) < infected)
+      return 'The number can only remain the same or increase\nplease verify the value';
+    else
+      return null;
+  }
+
+  String validateRecovered(String value) {
+    if (int.tryParse(value) < recovered)
+      return 'The number can only remain the same or increase\nplease verify the value';
+    else
+      return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,7 +83,10 @@ class _HomePageState extends State<HomePage> {
         logoutCallback: widget._signOut,
       ),
       appBar: new AppBar(
-        title: Text('Home', style: kAppBarstyle,),
+        title: Text(
+          'Home',
+          style: kAppBarstyle,
+        ),
         centerTitle: true,
         iconTheme: new IconThemeData(color: Colors.green),
         elevation: 0.0,
@@ -107,7 +133,7 @@ class _HomePageState extends State<HomePage> {
                       isExpanded: true,
                       underline: SizedBox(),
                       icon: SvgPicture.asset("assets/icons/dropdown.svg"),
-                      value: "Kenya",
+                      value: listVal,
                       items: ['Kenya', 'Africa', 'United States', 'Italy']
                           .map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
@@ -115,7 +141,11 @@ class _HomePageState extends State<HomePage> {
                           child: Text(value),
                         );
                       }).toList(),
-                      onChanged: (value) {},
+                      onChanged: (value) {
+                        setState(() {
+                          listVal = value;
+                        });
+                      },
                     ),
                   ),
                 ],
@@ -200,51 +230,181 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
+      floatingActionButton: Row(
+        children: <Widget>[
+          SizedBox(
+            width: 50.0,
+          ),
+          Align(
+            alignment: Alignment.bottomLeft,
+            child: FloatingActionButton(
+              backgroundColor: kDeathColor,
+              onPressed: () {
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        backgroundColor: Colors.white.withOpacity(0.85),
+                        shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(20.0))),
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Text(
+                              "These values will be updated as the current number of Covid-19 cases in the country as of this moment.\n\n If you are sure these are true Proceed,\n else please Cancel",
+                              style: TextStyle(color: Colors.black),
+                              textAlign: TextAlign.center,
+                            ),
+                            Form(
+                                key: _formKey,
+                                child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: TextFormField(
+                                          keyboardType: TextInputType.number,
+                                          initialValue: infected.toString(),
+                                          validator: validateInfected,
+                                          decoration: InputDecoration(
+                                              labelText: 'Infected:'),
+                                          onSaved: (value) =>
+                                              infected = int.tryParse(value),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: TextFormField(
+                                          validator: validateDeaths,
+                                          initialValue: dead.toString(),
+                                          keyboardType: TextInputType.number,
+                                          decoration: InputDecoration(
+                                              labelText: 'Deaths:'),
+                                          onSaved: (value) =>
+                                              dead = int.tryParse(value),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: TextFormField(
+                                          keyboardType: TextInputType.number,
+                                          initialValue: recovered.toString(),
+                                          validator: validateRecovered,
+                                          decoration: InputDecoration(
+                                              labelText: 'Recovered:'),
+                                          onSaved: (value) =>
+                                              recovered = int.tryParse(value),
+                                        ),
+                                      ),
+                                    ])),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: RaisedButton(
+                                    color: kDeathColor,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(20.0))),
+                                    child: Text(
+                                      "Proceed",
+                                      style: TextStyle(color: Colors.black),
+                                    ),
+                                    onPressed: () {
+                                      if (_formKey.currentState.validate()) {
+                                        _formKey.currentState.save();
+                                        crudObj.updateData({
+                                          'infected': infected,
+                                          'dead': dead,
+                                          'recovered': recovered
+                                        });
+                                        Navigator.of(context).pop();
+                                      }
+                                    },
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: RaisedButton(
+                                    color: kRecovercolor,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(20.0))),
+                                    child: Text(
+                                      "Cancel",
+                                      style: TextStyle(color: Colors.black),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                      );
+                    });
+              },
+              tooltip: 'Increment',
+              child: Icon(Icons.add),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget cases(){
+  Widget cases() {
     return StreamBuilder(
-      stream:  Firestore.instance.collection('cases').document('hNZISn2aVmS6Ow5Ipye3').snapshots(),
+      stream: Firestore.instance
+          .collection('cases')
+          .document('hNZISn2aVmS6Ow5Ipye3')
+          .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return CircularProgressIndicator();
         }
         var userData = snapshot.data;
+        dead = userData['dead'];
+        infected = userData['infected'];
+        recovered = userData['recovered'];
         return Container(
-                    padding: EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          offset: Offset(0, 4),
-                          blurRadius: 30,
-                          color: kShadowColor,
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Counter(
-                          color: kInfectedColor,
-                          number: userData['infected'],
-                          title: "Infected",
-                        ),
-                        Counter(
-                          color: kDeathColor,
-                          number: userData['dead'],
-                          title: "Deaths",
-                        ),
-                        Counter(
-                          color: kRecovercolor,
-                          number: userData['recovered'],
-                          title: "Recovered",
-                        ),
-                      ],
-                    ),
-                  );
+          padding: EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                offset: Offset(0, 4),
+                blurRadius: 30,
+                color: kShadowColor,
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Counter(
+                color: kInfectedColor,
+                number: userData['infected'],
+                title: "Infected",
+              ),
+              Counter(
+                color: kDeathColor,
+                number: userData['dead'],
+                title: "Deaths",
+              ),
+              Counter(
+                color: kRecovercolor,
+                number: userData['recovered'],
+                title: "Recovered",
+              ),
+            ],
+          ),
+        );
       },
     );
   }

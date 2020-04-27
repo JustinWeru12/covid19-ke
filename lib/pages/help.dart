@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:covid19/services/authentication.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HelpPage extends StatefulWidget {
   HelpPage({Key key, this.auth, this.userId, this.logoutCallback})
@@ -26,6 +27,7 @@ class HelpPage extends StatefulWidget {
       print(e);
     }
   }
+
   @override
   _HelpPageState createState() => _HelpPageState();
 }
@@ -49,7 +51,7 @@ class _HelpPageState extends State<HelpPage> {
   final _bodyController = TextEditingController(
     text: 'Mail body.',
   );
-  final String _repositories = "4";
+  final String _repositories = "7";
   var email = TextEditingController();
 
   final String _scores = "450";
@@ -58,12 +60,11 @@ class _HelpPageState extends State<HelpPage> {
 
   Future<void> send() async {
     final Email email = Email(
-      body: _bodyController.text,
-      subject: _subjectController.text,
-      recipients: ['justinivor20@gmail.com'],
-      attachmentPaths: attachments,
-      isHTML: isHTML
-    );
+        body: _bodyController.text,
+        subject: _subjectController.text,
+        recipients: ['justinivor20@gmail.com'],
+        attachmentPaths: attachments,
+        isHTML: isHTML);
     String platformResponse;
 
     try {
@@ -278,7 +279,15 @@ class _HelpPageState extends State<HelpPage> {
         children: <Widget>[
           Expanded(
             child: InkWell(
-              onTap: () => print("followed"),
+              onTap: () async {
+                const url = 'https://github.com/JustinWeru12';
+
+                if (await canLaunch(url)) {
+                  await launch(url, forceSafariVC: false);
+                } else {
+                  throw 'Could not launch $url';
+                }
+              },
               child: Container(
                 height: 40.0,
                 decoration: BoxDecoration(
@@ -331,105 +340,107 @@ class _HelpPageState extends State<HelpPage> {
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context) {
-          return AlertDialog(
-            backgroundColor: kPrimaryColor,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            title: Text(
-              'Contact the Developer',
-              style: TextStyle(
-                  fontSize: 25.0,
-                  fontFamily: 'Roboto',
-                  fontWeight: FontWeight.normal,
-                  fontStyle: FontStyle.normal),
-              textAlign: TextAlign.center,
-            ),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  SizedBox(
-                    width: 400.0,
-                  ),
-                  Container(
-                    child: Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.max,
-                          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: TextField(
-                                controller: _subjectController,
-                                decoration: InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  labelText: 'Subject',
+          return StatefulBuilder(builder: (context, setState) {
+            return AlertDialog(
+              backgroundColor: kBackgroundColor.withOpacity(0.9),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              title: Text(
+                'Contact the Developer',
+                style: TextStyle(
+                    fontSize: 25.0,
+                    fontFamily: 'Roboto',
+                    fontWeight: FontWeight.normal,
+                    fontStyle: FontStyle.normal),
+                textAlign: TextAlign.center,
+              ),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    SizedBox(
+                      width: 400.0,
+                    ),
+                    Container(
+                      child: Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.max,
+                            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: TextField(
+                                  controller: _subjectController,
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    labelText: 'Subject',
+                                  ),
                                 ),
                               ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: TextField(
-                                controller: _bodyController,
-                                maxLines: 10,
-                                decoration: InputDecoration(
-                                    labelText: 'Body',
-                                    border: OutlineInputBorder()),
+                              Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: TextField(
+                                  controller: _bodyController,
+                                  maxLines: 10,
+                                  decoration: InputDecoration(
+                                      labelText: 'Body',
+                                      border: OutlineInputBorder()),
+                                ),
                               ),
-                            ),
-                            CheckboxListTile(
-                              title: Text('HTML'),
-                              onChanged: (bool value) {
-                                setState(() {
-                                  isHTML = value;
-                                });
-                              },
-                              value: isHTML,
-                            ),
-                            ...attachments.map(
-                              (item) => Text(
-                                item,
-                                overflow: TextOverflow.fade,
+                              CheckboxListTile(
+                                title: Text('File'),
+                                onChanged: (bool value) {
+                                  setState(() {
+                                    isHTML = value;
+                                  });
+                                },
+                                value: isHTML,
                               ),
-                            ),
-                            // imagePath,
-                          ],
+                              ...attachments.map(
+                                (item) => Text(
+                                  item,
+                                  overflow: TextOverflow.fade,
+                                ),
+                              ),
+                              // imagePath,
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  FloatingActionButton.extended(
-                    icon: Icon(Icons.camera),
-                    label: Text('Add Image'),
-                    onPressed: _openImagePicker,
-                  ),
-                ],
+                    FloatingActionButton.extended(
+                      icon: Icon(Icons.camera),
+                      label: Text('Add Image'),
+                      onPressed: _openImagePicker,
+                    ),
+                  ],
+                ),
               ),
-            ),
-            actions: <Widget>[
-              RaisedButton(
-                  elevation: 5.0,
-                  padding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0)),
-                  child: Row(
-                    children: <Widget>[
-                      Text(
-                        'Send',
-                        style: TextStyle(
-                            fontSize: 15.0, fontWeight: FontWeight.bold),
-                      ),
-                      Icon(Icons.send),
-                    ],
-                  ),
-                  textColor: Colors.red,
-                  onPressed: send)
-            ],
-          );
+              actions: <Widget>[
+                RaisedButton(
+                    elevation: 5.0,
+                    padding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0)),
+                    child: Row(
+                      children: <Widget>[
+                        Text(
+                          'Send',
+                          style: TextStyle(
+                              fontSize: 15.0, fontWeight: FontWeight.bold),
+                        ),
+                        Icon(Icons.send),
+                      ],
+                    ),
+                    textColor: Colors.red,
+                    onPressed: send)
+              ],
+            );
+          });
         });
   }
 
@@ -448,7 +459,10 @@ class _HelpPageState extends State<HelpPage> {
         logoutCallback: widget._signOut,
       ),
       appBar: new AppBar(
-        title: Text('Get in Touch', style: kAppBarstyle,),
+        title: Text(
+          'Get in Touch',
+          style: kAppBarstyle,
+        ),
         centerTitle: true,
         iconTheme: new IconThemeData(color: Colors.green),
         elevation: 0.0,

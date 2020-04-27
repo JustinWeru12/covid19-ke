@@ -41,8 +41,7 @@ class _UserProfilState extends State<UserProfil> {
   String userId = 'userId';
   CrudMethods crudObj = new CrudMethods();
   String userMail = 'userMail';
-  String profilPicture =
-      'https://firebasestorage.googleapis.com/v0/b/lynight-53310.appspot.com/o/profilePics%2Fbloon_pics.jpg?alt=media&token=ab6c1537-9b1c-4cb4-b9d6-2e5fa9c7cb46';
+  String profilPicture;
   String _phone;
   String _fullNames;
   String _address;

@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:collection';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:covid19/pages/sidebar.dart';
 import 'package:covid19/services/authentication.dart';
 import 'package:covid19/style/theme.dart';
-import 'package:covid19/widgets/counter.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
@@ -39,53 +39,63 @@ class MapPageState extends State<MapPage> {
   bool _serviceEnabled;
   PermissionStatus _permissionGranted;
   LocationData _locationData;
+  LocationData currentLocation;
   Set<Circle> _circles = HashSet<Circle>();
+  StreamSubscription<LocationData> locationsubs;
   List<LatLng> latLng = List<LatLng>();
-  double radius = 500.0;
+  double radius = 100.0;
+  double zoomSize = 10;
+  double tiltAngle = 80;
+  double bearingAngle = 30;
   bool _isCircle = true;
   int _circleIdCounter = 1;
-  StreamSubscription<LocationData> _locationSubscription;
   String _error;
   var pos;
 
   @override
   void initState() {
     super.initState();
-    _listenLocation();
+    location = new Location();
+    locationsubs = location.onLocationChanged.listen((LocationData cLoc) {
+      currentLocation = cLoc;
+      updatePinOnMap();
+    });
     setCustomMapPin();
     _circles.clear();
     _checkLocationPermission();
     _requestPermission();
     _locationData = widget.location;
-    getLocation();
+    initialLocation();
   }
 
-  Future<void> getLocation() async {
-    final LocationData _locationResult = await location.getLocation();
+  @override
+  void dispose() {
+    locationsubs.cancel();
+    super.dispose();
+  }
+
+  void updatePinOnMap() async {
+    CameraPosition cPosition = CameraPosition(
+      zoom: zoomSize,
+      tilt: tiltAngle,
+      bearing: bearingAngle,
+      target: LatLng(currentLocation.latitude, currentLocation.longitude),
+    );
+    final GoogleMapController controller = await _controller.future;
+    controller.animateCamera(CameraUpdate.newCameraPosition(cPosition));
     setState(() {
-    pos = _locationResult;
-    print(pos);
+      var pinPosition =
+          LatLng(currentLocation.latitude, currentLocation.longitude);
+      _markers.removeWhere((m) => m.markerId.value == 'pinLocationIcon');
+      _markers.add(Marker(
+          markerId: MarkerId('pinLocationIcon'),
+          position: pinPosition, // updated position
+          icon: pinLocationIcon));
     });
   }
 
-  Future<void> _listenLocation() async {
-    _locationSubscription =
-        location.onLocationChanged.handleError((dynamic err) {
-      setState(() {
-        _error = err.code;
-      });
-      _locationSubscription.cancel();
-    }).listen((LocationData currentLocation) {
-      setState(() {
-        _error = null;
-
-        _locationData = currentLocation;
-      });
-    });
-  }
-
-  Future<void> _stopListen() async {
-    _locationSubscription.cancel();
+  void initialLocation() async {
+    pos = await location.getLocation();
   }
 
   void setCustomMapPin() async {
@@ -127,12 +137,26 @@ class MapPageState extends State<MapPage> {
         strokeColor: kDeathColor));
   }
 
+  addToList() async {
+    Firestore.instance.collection('markers').add({
+      'location':
+          new GeoPoint(currentLocation.latitude, currentLocation.longitude),
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     LatLng pinPosition = LatLng(-0.4250893, 36.9535040);
-
-    CameraPosition initialLocation =
-        CameraPosition(zoom: 16, bearing: 30, target: pinPosition);
+    CameraPosition initialLocation;
+    if (currentLocation != null) {
+      initialLocation = CameraPosition(
+          target: LatLng(currentLocation.latitude, currentLocation.longitude),
+          zoom: zoomSize,
+          tilt: tiltAngle,
+          bearing: bearingAngle);
+    } else {
+      initialLocation = CameraPosition(zoom: zoomSize, target: pinPosition);
+    }
     return Scaffold(
       drawer: SideBar(
         logoutCallback: widget._signOut,
@@ -157,29 +181,134 @@ class MapPageState extends State<MapPage> {
           )),
         ),
       ),
-      body: GoogleMap(
-        myLocationEnabled: true,
-        compassEnabled: true,
-        mapType: MapType.hybrid,
-        mapToolbarEnabled: true,
-        circles: _circles,
-        markers: _markers,
-        initialCameraPosition: initialLocation,
-        onMapCreated: (GoogleMapController controller) {
-          // controller.setMapStyle(Utils.mapStyles);
-          _controller.complete(controller);
-          setState(() {
-            _markers.add(Marker(
-                markerId: MarkerId('<MARKER_ID>'),
-                position: pinPosition,
-                icon: pinLocationIcon));
-          });
+      body: StreamBuilder(
+        stream: Firestore.instance.collection('markers').snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Center(
+              child: Text('Loading maps.. Please Wait'),
+            );
+          }
+          for (int i = 0; i < snapshot.data.documents.length; i++) {
+            final String circleIdVal = 'case_id_$i';
+            _circles.add(Circle(
+                circleId: CircleId(circleIdVal),
+                center: new LatLng(
+                    snapshot.data.documents[i]['location'].latitude,
+                    snapshot.data.documents[i]['location'].longitude),
+                radius: radius,
+                fillColor: kDeathColor.withOpacity(0.7),
+                strokeWidth: 3,
+                strokeColor: kDeathColor));
+          }
+          return GoogleMap(
+            myLocationEnabled: true,
+            compassEnabled: false,
+            mapType: MapType.hybrid,
+            mapToolbarEnabled: true,
+            circles: _circles,
+            markers: _markers,
+            initialCameraPosition: initialLocation,
+            zoomControlsEnabled: true,
+            onMapCreated: (GoogleMapController controller) {
+              // controller.setMapStyle(Utils.mapStyles);
+              _controller.complete(controller);
+              setState(() {
+                // _markers.add(Marker(
+                //     markerId: MarkerId('<MARKER_ID>'),
+                //     position: currentLocation,
+                //     icon: pinLocationIcon));
+              });
+            },
+            onTap: (point) {
+              setState(() {
+                _setCircles(point);
+              });
+            },
+            onCameraMove: (CameraPosition cameraPosition) {
+              setState(() {
+                zoomSize = cameraPosition.zoom;
+                bearingAngle = cameraPosition.bearing;
+                tiltAngle = cameraPosition.tilt;
+              });
+            },
+          );
         },
-        onTap: (point) {
-          setState(() {
-            _setCircles(point);
-          });
-        },
+      ),
+      floatingActionButton: Row(
+        children: <Widget>[
+          SizedBox(
+            width: 50.0,
+          ),
+          Align(
+            alignment: Alignment.bottomLeft,
+            child: FloatingActionButton(
+              backgroundColor: kDeathColor,
+              onPressed: () {
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        backgroundColor: Colors.white.withOpacity(0.85),
+                        shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(20.0))),
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Text(
+                              "This area (Current Location) will be recorded as one with a confirmed covid-19 case.\n All people within 100m radius will be put under mandatory lockdown and observation for 14-21 days.\n\n Are you sure you want to proceed?\n",
+                              style: TextStyle(color: Colors.black),
+                              textAlign: TextAlign.center,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: RaisedButton(
+                                    color: kDeathColor,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(20.0))),
+                                    child: Text(
+                                      "Proceed",
+                                      style: TextStyle(color: Colors.black),
+                                    ),
+                                    onPressed: () {
+                                      addToList();
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: RaisedButton(
+                                    color: kRecovercolor,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(20.0))),
+                                    child: Text(
+                                      "Cancel",
+                                      style: TextStyle(color: Colors.black),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                      );
+                    });
+              },
+              tooltip: 'Increment',
+              child: Icon(Icons.add),
+            ),
+          ),
+        ],
       ),
     );
   }

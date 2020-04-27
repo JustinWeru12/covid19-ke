@@ -80,10 +80,10 @@ class _SideBarState extends State<SideBar> {
                 ),
               ),
               child: new GestureDetector(
-                child: image != null
+                child: profilPicture != null
                     ? Center(
                         child: new CircleAvatar(
-                          backgroundImage: new NetworkImage(image),
+                          backgroundImage: new NetworkImage(profilPicture),
                           maxRadius: 70.0,
                           minRadius: 60.0,
                         ),
@@ -99,7 +99,7 @@ class _SideBarState extends State<SideBar> {
             decoration: new BoxDecoration(
                 image: new DecorationImage(
                     image: new NetworkImage(
-                        "https://img00.deviantart.net/35f0/i/2015/018/2/6/low_poly_landscape__the_river_cut_by_bv_designs-d8eib00.jpg"),
+                        "https://firebasestorage.googleapis.com/v0/b/covid19-ke-80e90.appspot.com/o/landscape.png?alt=media&token=893eebff-69da-4be5-8bd4-4f5eb048415e"),
                     fit: BoxFit.fill)),
           ),
           ListTile(

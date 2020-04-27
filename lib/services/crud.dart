@@ -49,9 +49,10 @@ class CrudMethods {
         bool _myAdmin = userDocument["admin"];
   }
   getData() async {
-    // FirebaseUser user = await FirebaseAuth.instance.currentUser();
-    //     var userDocument = await Firestore.instance.collection('user').document(user.uid).get();
-    return Firestore.instance.collection('letters').snapshots();
+    return await Firestore.instance
+          .collection('cases')
+          .document('hNZISn2aVmS6Ow5Ipye3')
+          .get();
   }
   getProfile() async {
     return Firestore.instance.collection('profile').snapshots();
@@ -84,10 +85,10 @@ class CrudMethods {
     return ref.setData(userDataMap, merge: true);
   }
 
-  updateData(selectedDoc, newValues) {
+  updateData(newValues) {
     Firestore.instance
-        .collection('letters')
-        .document(selectedDoc)
+        .collection('cases')
+        .document("hNZISn2aVmS6Ow5Ipye3")
         .updateData(newValues)
         .catchError((e) {
       print(e);
