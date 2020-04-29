@@ -60,6 +60,7 @@ class _RootPageState extends State<RootPage> {
     });
   }
 
+
   Widget buildWaitingScreen() {
     return Scaffold(
       body: Container(

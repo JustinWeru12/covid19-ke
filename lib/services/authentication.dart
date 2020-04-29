@@ -14,6 +14,8 @@ abstract class BaseAuth {
 
   Future<void> sendEmailVerification();
 
+  Future<void> resetPassword(String email);
+
   Future<void> signOut();
 
   Future<bool> isEmailVerified();
@@ -29,8 +31,9 @@ abstract class BaseAuth {
     //print('USER EMAIL : ' + user.email);
     return user != null ? user.email : null;
   }
+
   Future<String> signInWithGoogle() async {}
-void signOutGoogle() async{}
+  void signOutGoogle() async {}
 }
 
 class Auth implements BaseAuth {
@@ -44,8 +47,10 @@ class Auth implements BaseAuth {
   Future<String> signIn(String email, String password) async {
     AuthResult result = await _firebaseAuth.signInWithEmailAndPassword(
         email: email, password: password);
-    FirebaseUser user = result.user;
+    if (result.user.isEmailVerified){
     return result.user.uid;
+    }
+    return null;
   }
 
   Future<String> getCurrentUID() async {
@@ -73,9 +78,18 @@ class Auth implements BaseAuth {
     AuthResult result = await _firebaseAuth.createUserWithEmailAndPassword(
         email: email, password: password);
     FirebaseUser user = result.user;
-        return result.user.uid;
+    try {
+      await user.sendEmailVerification();
+      return result.user.uid;
+    } catch (e) {
+      print("An error occured while trying to send email verification");
+      print(e.message);
+    }
   }
-  
+
+  Future<void> resetPassword(String email) async {
+    await _firebaseAuth.sendPasswordResetEmail(email: email);
+}
 
   Future updateUserName(String name, FirebaseUser currentUser) async {
     var userUpdateInfo = UserUpdateInfo();
@@ -107,36 +121,39 @@ class Auth implements BaseAuth {
     FirebaseUser user = await _firebaseAuth.currentUser();
     return user.isEmailVerified;
   }
+
   signInWithOTP(smsCode, verId) {
     AuthCredential authCreds = PhoneAuthProvider.getCredential(
         verificationId: verId, smsCode: smsCode);
-    signIn(verId,smsCode);
+    signIn(verId, smsCode);
   }
+
   Future<String> signInWithGoogle() async {
-  final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
-  final GoogleSignInAuthentication googleSignInAuthentication =
-      await googleSignInAccount.authentication;
+    final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
+    final GoogleSignInAuthentication googleSignInAuthentication =
+        await googleSignInAccount.authentication;
 
-  final AuthCredential credential = GoogleAuthProvider.getCredential(
-    accessToken: googleSignInAuthentication.accessToken,
-    idToken: googleSignInAuthentication.idToken,
-  );
+    final AuthCredential credential = GoogleAuthProvider.getCredential(
+      accessToken: googleSignInAuthentication.accessToken,
+      idToken: googleSignInAuthentication.idToken,
+    );
 
-  final AuthResult authResult = await _firebaseAuth.signInWithCredential(credential);
-  final FirebaseUser user = authResult.user;
+    final AuthResult authResult =
+        await _firebaseAuth.signInWithCredential(credential);
+    final FirebaseUser user = authResult.user;
 
-  assert(!user.isAnonymous);
-  assert(await user.getIdToken() != null);
+    assert(!user.isAnonymous);
+    assert(await user.getIdToken() != null);
 
-  final FirebaseUser currentUser = await _firebaseAuth.currentUser();
-  assert(user.uid == currentUser.uid);
+    final FirebaseUser currentUser = await _firebaseAuth.currentUser();
+    assert(user.uid == currentUser.uid);
 
-  return 'signInWithGoogle succeeded: $user';
-}
+    return 'signInWithGoogle succeeded: $user';
+  }
 
-void signOutGoogle() async{
-  await googleSignIn.signOut();
+  void signOutGoogle() async {
+    await googleSignIn.signOut();
 
-  print("User Sign Out");
-}
+    print("User Sign Out");
+  }
 }

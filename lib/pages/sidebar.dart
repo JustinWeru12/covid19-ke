@@ -53,8 +53,6 @@ class _SideBarState extends State<SideBar> {
 
   @override
   Widget build(BuildContext context) {
-    var userData =
-        Firestore.instance.collection('user').document(userId).snapshots();
     return Drawer(
       child: ListView(
         children: <Widget>[

@@ -22,7 +22,7 @@ class LoginSignUpPage extends StatefulWidget {
   _LoginSignUpPageState createState() => _LoginSignUpPageState();
 }
 
-enum FormType { login, register }
+enum FormType { login, register, reset }
 
 class _LoginSignUpPageState extends State<LoginSignUpPage>
     with TickerProviderStateMixin {
@@ -34,7 +34,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage>
   DateTime dob;
   File picture;
   bool admin;
-    double offset = 0;
+  double offset = 0;
   // String _address;
   // String _postalCode;
   String _authHint = '';
@@ -76,7 +76,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage>
             picture:
                 "https://firebasestorage.googleapis.com/v0/b/covid19-ke-80e90.appspot.com/o/IMG_-oxvq7.jpg?alt=media&token=b8d2972a-e54c-49ff-8c4c-c869bd9d9592",
             address: "",
-            postalCode: "",
+            aColor: 0xFF36C12C,
             dob: dob,
             admin: false,
           );
@@ -86,7 +86,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage>
         if (userId == null) {
           print("EMAIL NOT VERIFIED");
           setState(() {
-            _authHint = 'Check your email 🙂';
+            _authHint = 'Check your email for a verify link';
             _isLoading = false;
             _formType = FormType.login;
           });
@@ -115,7 +115,8 @@ class _LoginSignUpPageState extends State<LoginSignUpPage>
               _authHint = "User with this email has been disabled.";
               break;
             case "ERROR_TOO_MANY_REQUESTS":
-              _authHint = "Too many Attemps. Account has temporarily disabled.\n Try again later.";
+              _authHint =
+                  "Too many Attemps. Account has temporarily disabled.\n Try again later.";
               break;
             case "ERROR_OPERATION_NOT_ALLOWED":
               _authHint = "Signing in with Email and Password is not enabled.";
@@ -144,6 +145,14 @@ class _LoginSignUpPageState extends State<LoginSignUpPage>
     });
   }
 
+  void moveToReset() {
+    _formKey.currentState.reset();
+    setState(() {
+      _formType = FormType.reset;
+      _authHint = '';
+    });
+  }
+
   void moveToLogin() {
     _formKey.currentState.reset();
     setState(() {
@@ -157,9 +166,9 @@ class _LoginSignUpPageState extends State<LoginSignUpPage>
       padding: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
       child: TextFormField(
         maxLines: 1,
-        key: new Key('email'),
+        // key: new Key('email'),
         decoration: InputDecoration(
-          contentPadding: EdgeInsets.fromLTRB(15.0,0.0, 10.0, 0.0),
+          contentPadding: EdgeInsets.fromLTRB(15.0, 0.0, 10.0, 0.0),
           filled: true,
           fillColor: Theme.kBackgroundColor.withOpacity(0.75),
           labelText: 'Email',
@@ -191,9 +200,9 @@ class _LoginSignUpPageState extends State<LoginSignUpPage>
       padding: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
       child: TextFormField(
         maxLines: 1,
-        key: new Key('namefield'),
+        // key: new Key('namefield'),
         decoration: InputDecoration(
-          contentPadding: EdgeInsets.fromLTRB(15.0,0.0, 10.0, 0.0),
+          contentPadding: EdgeInsets.fromLTRB(15.0, 0.0, 10.0, 0.0),
           filled: true,
           fillColor: Theme.kBackgroundColor.withOpacity(0.75),
           labelText: 'Full Name',
@@ -222,9 +231,9 @@ class _LoginSignUpPageState extends State<LoginSignUpPage>
       padding: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
       child: TextFormField(
         maxLines: 1,
-        key: new Key('password'),
+        // key: new Key('password'),
         decoration: InputDecoration(
-          contentPadding: EdgeInsets.fromLTRB(15.0,0.0, 10.0, 0.0),
+          contentPadding: EdgeInsets.fromLTRB(15.0, 0.0, 10.0, 0.0),
           filled: true,
           fillColor: Theme.kBackgroundColor.withOpacity(0.75),
           labelText: 'Password',
@@ -255,7 +264,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage>
       padding: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
       child: TextFormField(
         decoration: InputDecoration(
-          contentPadding: EdgeInsets.fromLTRB(15.0,0.0, 10.0, 0.0),
+          contentPadding: EdgeInsets.fromLTRB(15.0, 0.0, 10.0, 0.0),
           filled: true,
           fillColor: Theme.kBackgroundColor.withOpacity(0.75),
           labelText: 'Confirm Password',
@@ -330,12 +339,46 @@ class _LoginSignUpPageState extends State<LoginSignUpPage>
               height: 44.0,
               onPressed: validateAndSubmit,
             ),
-            SizedBox(height:20.0),
+            SizedBox(height: 10.0),
+            FlatButton(
+                key: new Key('reset-account'),
+                child: Text(
+                  "Reset Password",
+                ),
+                onPressed: moveToReset),
+            // SizedBox(height: 10),
             FlatButton(
                 key: new Key('need-account'),
                 child: Text("Create a New Account"),
                 onPressed: moveToRegister),
-                SizedBox(height:20.0),
+            SizedBox(height: 20.0),
+          ],
+        );
+      case FormType.reset:
+        return ListView(
+          shrinkWrap: true,
+          physics: ScrollPhysics(),
+          children: <Widget>[
+            PrimaryButton(
+                key: new Key('reset'),
+                text: 'Reset Password',
+                height: 44.0,
+                onPressed: () {
+                  if (_formKey.currentState.validate()) {
+                    _formKey.currentState.save();
+                    widget.auth.resetPassword(_email);
+                    setState(() {
+                      _authHint = 'Check your email';
+                      _formType = FormType.login;
+                    });
+                  }
+                }),
+            SizedBox(height: 20.0),
+            FlatButton(
+                key: new Key('need-login'),
+                child: Text("Already Have an Account ? Login"),
+                onPressed: moveToLogin),
+            SizedBox(height: 20.0),
           ],
         );
       default:
@@ -357,12 +400,12 @@ class _LoginSignUpPageState extends State<LoginSignUpPage>
                     validateAndSubmit();
                   }
                 }),
-                SizedBox(height:20.0),
+            SizedBox(height: 20.0),
             FlatButton(
                 key: new Key('need-login'),
                 child: Text("Already Have an Account ? Login"),
                 onPressed: moveToLogin),
-                SizedBox(height:20.0),
+            SizedBox(height: 20.0),
           ],
         );
     }
@@ -423,7 +466,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage>
             SizedBox(
               height: 10.0,
             ),
-            _buildPasswordField(),
+           _formType != FormType.reset ? _buildPasswordField():Container(),
             SizedBox(
               height: 10.0,
             ),
@@ -471,27 +514,27 @@ class _LoginSignUpPageState extends State<LoginSignUpPage>
       body: Stack(
         children: <Widget>[
           Container(
-                width: size.width,
-                height: size.height,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage('assets/images/Covid19.png'),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 0.0, sigmaY: 0.0),
-                  child: Container(
-                    color: Colors.black.withOpacity(0.5),
-                  ),
-                ),
+            width: size.width,
+            height: size.height,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/Covid19.png'),
+                fit: BoxFit.cover,
               ),
-           MyHeader(
-              image: "assets/icons/Drcorona.svg",
-              textTop: "Make a difference",
-              textBottom: "   Stay at home.🏡",
-              offset: offset,
             ),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 0.0, sigmaY: 0.0),
+              child: Container(
+                color: Colors.black.withOpacity(0.5),
+              ),
+            ),
+          ),
+          MyHeader(
+            image: "assets/icons/Drcorona.svg",
+            textTop: "Make a difference",
+            textBottom: "   Stay at home.🏡",
+            offset: offset,
+          ),
           Align(
             alignment: Alignment.bottomCenter,
             child: SingleChildScrollView(

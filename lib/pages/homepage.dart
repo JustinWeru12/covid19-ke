@@ -34,13 +34,19 @@ class _HomePageState extends State<HomePage> {
   CrudMethods crudObj = new CrudMethods();
   double offset = 0;
   String listVal = 'Kenya';
-  int dead, infected, recovered;
+  int dead, infected, recovered, aColor;
   final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
     controller.addListener(onScroll);
+    crudObj.getDataFromUserFromDocument().then((value) {
+      Map<String, dynamic> dataMap = value.data;
+      setState(() {
+        aColor = dataMap['aColor'];
+      });
+    });
   }
 
   @override
@@ -142,9 +148,9 @@ class _HomePageState extends State<HomePage> {
                         );
                       }).toList(),
                       onChanged: (value) {
-                        setState(() {
-                          listVal = value;
-                        });
+                        // setState(() {
+                        //   listVal = value;
+                        // });
                       },
                     ),
                   ),
@@ -156,6 +162,36 @@ class _HomePageState extends State<HomePage> {
               padding: EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: "Public Safety Level\n",
+                              style: kTitleTextstyle,
+                            ),
+                            TextSpan(
+                              text: " ",
+                              style: TextStyle(
+                                color: kTextLightColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Spacer(),
+                      Text(
+                        "See details",
+                        style: TextStyle(
+                          color: kPrimaryColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                  myColor(),
+                  SizedBox(height: 20),
                   Row(
                     children: <Widget>[
                       RichText(
@@ -224,6 +260,8 @@ class _HomePageState extends State<HomePage> {
                       fit: BoxFit.fill,
                     ),
                   ),
+                  Container(
+                      height: 10, width: 50, color: Color(aColor ?? 4281778476))
                 ],
               ),
             ),
@@ -407,5 +445,48 @@ class _HomePageState extends State<HomePage> {
         );
       },
     );
+  }
+
+  Widget myColor() {
+    return Container(
+        padding: EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: aColor == null ? kBackgroundColor : Color(aColor),
+          boxShadow: [
+            BoxShadow(
+              offset: Offset(0, 4),
+              blurRadius: 30,
+              color: kShadowColor,
+            ),
+          ],
+        ),
+        child: Column(children: <Widget>[
+          aColor == 4281778476
+              ? Text(
+                  "Your color is green.This means that you have not been in areas with reported Covid-19 cases for the past 14-21 days.\nPlease remain vigilant and follow proper prevention measures.",
+                  style: TextStyle(color: Colors.black),
+                  textAlign: TextAlign.center,
+                )
+              : Container(),
+          aColor == 4294920264
+              ? Text(
+                  "Your color is red.This means that you have been in an area with a reported Covid-19 case(s) within the past 14 days.\nPlease remain in isolation for the next 21 days and reach to emergency personel for rapid testing.",
+                  style: TextStyle(color: Colors.black),
+                  textAlign: TextAlign.center,
+                )
+              : Container(),
+          aColor == 4294936392
+              ? Text(
+                  "Your color is orange.This means that you have isolated for past 14 days and tested negative for Covid_19.\nPlease distance yourself for an extended 7 days and do not travel or visit public places.",
+                  style: TextStyle(color: Colors.black),
+                  textAlign: TextAlign.center,
+                )
+              : Container(),
+          aColor == null
+              ? SizedBox(
+                  height: 10, width: 10, child: CircularProgressIndicator())
+              : Container()
+        ]));
   }
 }

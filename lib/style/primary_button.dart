@@ -11,7 +11,7 @@ class PrimaryButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(0.0, 25.0, 0.0, 0.0),
+      padding: EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
       child: SizedBox(
         height: 40.0,
         child: RaisedButton(

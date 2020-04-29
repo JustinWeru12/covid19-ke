@@ -1,6 +1,3 @@
-import 'dart:io';
-import 'dart:ui';
-
 class User{
   final String userId;
   User({this.userId});
@@ -12,10 +9,10 @@ class UserData{
   final String phone;
   final String picture;
   final String address;
-  final String postalCode;
+  final int aColor;
   final DateTime dob;
   final bool admin;
-  UserData({this.userId, this.fullNames, this.email, this.phone, this.address, this.postalCode, this.dob, this.picture, this.admin});
+  UserData({this.userId, this.fullNames, this.email, this.phone, this.address, this.aColor, this.dob, this.picture, this.admin});
 
 Map<String,dynamic> getDataMap(){
     return {
@@ -24,7 +21,7 @@ Map<String,dynamic> getDataMap(){
       "email": email,
       "phone": phone,
       "address": address,
-      "postalCode": postalCode,
+      "aColor": aColor,
       "picture": picture,
       "dob": dob,
       "admin": admin

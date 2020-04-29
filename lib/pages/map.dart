@@ -36,9 +36,7 @@ class MapPageState extends State<MapPage> {
   Set<Marker> _markers = {};
   Completer<GoogleMapController> _controller = Completer();
   Location location = new Location();
-  bool _serviceEnabled;
   PermissionStatus _permissionGranted;
-  LocationData _locationData;
   LocationData currentLocation;
   Set<Circle> _circles = HashSet<Circle>();
   StreamSubscription<LocationData> locationsubs;
@@ -47,9 +45,7 @@ class MapPageState extends State<MapPage> {
   double zoomSize = 10;
   double tiltAngle = 80;
   double bearingAngle = 30;
-  bool _isCircle = true;
   int _circleIdCounter = 1;
-  String _error;
   var pos;
 
   @override
@@ -64,7 +60,6 @@ class MapPageState extends State<MapPage> {
     _circles.clear();
     _checkLocationPermission();
     _requestPermission();
-    _locationData = widget.location;
     initialLocation();
   }
 

@@ -45,7 +45,6 @@ class _UserProfilState extends State<UserProfil> {
   String _phone;
   String _fullNames;
   String _address;
-  String _postalCode;
   String dob;
   String myAddress;
   String myPcode;
