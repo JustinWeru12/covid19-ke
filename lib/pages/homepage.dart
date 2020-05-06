@@ -7,6 +7,7 @@ import 'package:covid19/widgets/counter.dart';
 import 'package:covid19/widgets/my_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.auth, this.userId, this.logoutCallback})
@@ -36,6 +37,7 @@ class _HomePageState extends State<HomePage> {
   String listVal = 'Kenya';
   int dead, infected, recovered, aColor;
   final _formKey = GlobalKey<FormState>();
+  var date, colorDate;
 
   @override
   void initState() {
@@ -45,6 +47,15 @@ class _HomePageState extends State<HomePage> {
       Map<String, dynamic> dataMap = value.data;
       setState(() {
         aColor = dataMap['aColor'];
+        colorDate = dataMap['date'];
+      });
+    });
+    crudObj.getData().then((value) {
+      Map<String, dynamic> dataMap = value.data;
+      setState(() {
+       var dates = dataMap['upDate'].toDate();
+       date =new DateFormat.yMMMd().format(dates);
+        print(new DateFormat.yMMMd().format(dates));
       });
     });
   }
@@ -53,12 +64,23 @@ class _HomePageState extends State<HomePage> {
   void dispose() {
     controller.dispose();
     super.dispose();
+    updateColor();
   }
 
   void onScroll() {
     setState(() {
       offset = (controller.hasClients) ? controller.offset : 0;
     });
+  }
+
+  void updateColor() {
+    if (DateTime.now().millisecondsSinceEpoch - colorDate > 1814400000) {
+      if (aColor == 4294920264) {
+        crudObj.createOrUpdateUserData({'aColor': 4294936392,'date':DateTime.now().millisecondsSinceEpoch});
+      } else if (aColor == 4294936392) {
+        crudObj.createOrUpdateUserData({'aColor': 4281778476, 'date':DateTime.now().millisecondsSinceEpoch});
+      }
+    }
   }
 
   String validateDeaths(String value) {
@@ -202,7 +224,7 @@ class _HomePageState extends State<HomePage> {
                               style: kTitleTextstyle,
                             ),
                             TextSpan(
-                              text: "Newest update April 22",
+                              text: "Latest update: " + date.toString(),
                               style: TextStyle(
                                 color: kTextLightColor,
                               ),
@@ -356,7 +378,8 @@ class _HomePageState extends State<HomePage> {
                                         crudObj.updateData({
                                           'infected': infected,
                                           'dead': dead,
-                                          'recovered': recovered
+                                          'recovered': recovered,
+                                          'upDate': DateTime.now()
                                         });
                                         Navigator.of(context).pop();
                                       }
@@ -409,6 +432,8 @@ class _HomePageState extends State<HomePage> {
         dead = userData['dead'];
         infected = userData['infected'];
         recovered = userData['recovered'];
+       var dates = userData['upDate'].toDate();
+        date =new DateFormat.yMMMd().format(dates);
         return Container(
           padding: EdgeInsets.all(20),
           decoration: BoxDecoration(

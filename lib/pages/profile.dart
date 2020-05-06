@@ -249,7 +249,8 @@ class _UserProfilState extends State<UserProfil> {
                                 if (_formKey.currentState.validate()) {
                                   _formKey.currentState.save();
                                   crudObj.createOrUpdateUserData(
-                                      {'fullNames': _fullNames});
+                                      {'fullNames': _fullNames,
+                                      'date': DateTime.now().millisecondsSinceEpoch});
                                   Navigator.pop(context);
                                 }
                               },

@@ -35,8 +35,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage>
   File picture;
   bool admin;
   double offset = 0;
-  // String _address;
-  // String _postalCode;
+  int date = DateTime.now().millisecondsSinceEpoch;
   String _authHint = '';
   FormType _formType = FormType.login;
   String _password;
@@ -79,6 +78,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage>
             aColor: 0xFF36C12C,
             dob: dob,
             admin: false,
+            date : date
           );
           crudObj.createOrUpdateUserData(userData.getDataMap());
         }
@@ -302,8 +302,8 @@ class _LoginSignUpPageState extends State<LoginSignUpPage>
               DatePicker.showDatePicker(
                 context,
                 showTitleActions: true,
-                minTime: DateTime(1968, 1, 1),
-                maxTime: DateTime(2002, 3, 7),
+                minTime: DateTime(1960, 1, 1),
+                maxTime: DateTime(2009, 1, 1),
                 onConfirm: (date) {
                   setState(() {
                     dob = date;

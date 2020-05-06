@@ -97,7 +97,7 @@ class CrudMethods {
 
   deleteData(docId) {
     Firestore.instance
-        .collection('letters')
+        .collection('markers')
         .document(docId)
         .delete()
         .catchError((e) {

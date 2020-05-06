@@ -4,10 +4,14 @@ import 'dart:collection';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:covid19/pages/sidebar.dart';
 import 'package:covid19/services/authentication.dart';
+import 'package:covid19/services/crud.dart';
 import 'package:covid19/style/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:geoflutterfire/geoflutterfire.dart';
+import 'package:rxdart/subjects.dart';
+import 'package:rxdart/rxdart.dart';
 
 class MapPage extends StatefulWidget {
   MapPage({Key key, this.auth, this.userId, this.logoutCallback, this.location})
@@ -35,17 +39,25 @@ class MapPageState extends State<MapPage> {
   BitmapDescriptor pinLocationIcon;
   Set<Marker> _markers = {};
   Completer<GoogleMapController> _controller = Completer();
+  BehaviorSubject<double> radis = BehaviorSubject<double>.seeded(100.0);
+  Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
+  Stream<dynamic> query;
+  // StreamSubscription<List<DocumentSnapshot>> subscription;
   Location location = new Location();
+  Geoflutterfire geo = Geoflutterfire();
   PermissionStatus _permissionGranted;
   LocationData currentLocation;
   Set<Circle> _circles = HashSet<Circle>();
   StreamSubscription<LocationData> locationsubs;
+  Stream<List<DocumentSnapshot>> stream;
   List<LatLng> latLng = List<LatLng>();
   double radius = 100.0;
   double zoomSize = 10;
   double tiltAngle = 80;
   double bearingAngle = 30;
   int _circleIdCounter = 1;
+  DateTime date;
+  CrudMethods crudObj = new CrudMethods();
   var pos;
 
   @override
@@ -53,7 +65,9 @@ class MapPageState extends State<MapPage> {
     super.initState();
     location = new Location();
     locationsubs = location.onLocationChanged.listen((LocationData cLoc) {
-      currentLocation = cLoc;
+      setState(() {
+        currentLocation = cLoc;
+      });
       updatePinOnMap();
     });
     setCustomMapPin();
@@ -61,12 +75,15 @@ class MapPageState extends State<MapPage> {
     _checkLocationPermission();
     _requestPermission();
     initialLocation();
+    checkDist();
   }
 
   @override
   void dispose() {
     locationsubs.cancel();
     super.dispose();
+    radis.close();
+    // subscription.cancel();
   }
 
   void updatePinOnMap() async {
@@ -133,10 +150,33 @@ class MapPageState extends State<MapPage> {
   }
 
   addToList() async {
+    GeoFirePoint point = geo.point(
+      latitude: currentLocation.latitude,
+      longitude: currentLocation.longitude,
+    );
     Firestore.instance.collection('markers').add({
-      'location':
-          new GeoPoint(currentLocation.latitude, currentLocation.longitude),
+      'location': point.data,
+      'date': DateTime.now().millisecondsSinceEpoch
     });
+  }
+
+  remove() async {}
+
+  checkDist() async {
+     var pos = await location.getLocation();
+    geo = Geoflutterfire();
+    GeoFirePoint center = geo.point(
+        latitude: pos.latitude,
+        longitude: pos.longitude);
+    stream = radis.switchMap((rad) {
+      var collectionReference = Firestore.instance.collection('markers');
+      return geo.collection(collectionRef: collectionReference).within(
+          center: center, radius: rad, field: 'location', strictMode: true);
+    });
+  }
+
+  void _updateColors(List<DocumentSnapshot> documentList) {
+    crudObj.createOrUpdateUserData({'aColor': 4294920264});
   }
 
   @override
@@ -183,21 +223,33 @@ class MapPageState extends State<MapPage> {
             return Center(
               child: Text('Loading maps.. Please Wait'),
             );
-          }
-          for (int i = 0; i < snapshot.data.documents.length; i++) {
-            final String circleIdVal = 'case_id_$i';
-            _circles.add(Circle(
-                circleId: CircleId(circleIdVal),
-                center: new LatLng(
-                    snapshot.data.documents[i]['location'].latitude,
-                    snapshot.data.documents[i]['location'].longitude),
-                radius: radius,
-                fillColor: kDeathColor.withOpacity(0.7),
-                strokeWidth: 3,
-                strokeColor: kDeathColor));
+          } else if (snapshot.hasData) {
+            for (int i = 0; i < snapshot.data.documents.length; i++) {
+              if (DateTime.now().millisecondsSinceEpoch -
+                      snapshot.data.documents[i]['date'] >
+                  2419200000) {
+                crudObj.deleteData(snapshot.data.documents[i].documentID);
+              }
+              final String circleIdVal = 'case_id_$i';
+              _circles.add(Circle(
+                  circleId: CircleId(circleIdVal),
+                  center: new LatLng(
+                      snapshot
+                          .data.documents[i]['location']['geopoint'].latitude,
+                      snapshot
+                          .data.documents[i]['location']['geopoint'].longitude),
+                  radius: radius,
+                  fillColor: kDeathColor.withOpacity(0.7),
+                  strokeWidth: 3,
+                  strokeColor: kDeathColor,
+                  onTap:
+                      () {} //crudObj.deleteData(snapshot.data.documents[i].documentID)
+                  ));
+            }
           }
           return GoogleMap(
             myLocationEnabled: true,
+            tiltGesturesEnabled: true,
             compassEnabled: false,
             mapType: MapType.hybrid,
             mapToolbarEnabled: true,
@@ -208,7 +260,16 @@ class MapPageState extends State<MapPage> {
             onMapCreated: (GoogleMapController controller) {
               // controller.setMapStyle(Utils.mapStyles);
               _controller.complete(controller);
+              //  / checkDist();
               setState(() {
+                stream.listen((List<DocumentSnapshot> documentList) {
+                  if (documentList != null) {
+                    crudObj.createOrUpdateUserData({
+                      'aColor': 4294920264,
+                      'date': DateTime.now().millisecondsSinceEpoch
+                    });
+                  }
+                });
                 // _markers.add(Marker(
                 //     markerId: MarkerId('<MARKER_ID>'),
                 //     position: currentLocation,
@@ -217,8 +278,11 @@ class MapPageState extends State<MapPage> {
             },
             onTap: (point) {
               setState(() {
-                _setCircles(point);
+                // _setCircles(point);
               });
+            },
+            onLongPress: (point) {
+              // crudObj.deleteData(snapshot.data.documents.documentID);
             },
             onCameraMove: (CameraPosition cameraPosition) {
               setState(() {

@@ -1,8 +1,9 @@
-class User{
+class User {
   final String userId;
   User({this.userId});
 }
-class UserData{
+
+class UserData {
   final String userId;
   final String fullNames;
   final String email;
@@ -12,19 +13,31 @@ class UserData{
   final int aColor;
   final DateTime dob;
   final bool admin;
-  UserData({this.userId, this.fullNames, this.email, this.phone, this.address, this.aColor, this.dob, this.picture, this.admin});
+  final int date;
+  UserData(
+      {this.userId,
+      this.fullNames,
+      this.email,
+      this.phone,
+      this.address,
+      this.aColor,
+      this.dob,
+      this.picture,
+      this.admin,
+      this.date});
 
-Map<String,dynamic> getDataMap(){
+  Map<String, dynamic> getDataMap() {
     return {
       "userId": userId,
-      "fullNames":fullNames,
+      "fullNames": fullNames,
       "email": email,
       "phone": phone,
       "address": address,
       "aColor": aColor,
       "picture": picture,
       "dob": dob,
-      "admin": admin
+      "admin": admin,
+      "date": date
     };
   }
 }
