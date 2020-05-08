@@ -32,8 +32,11 @@ abstract class BaseAuth {
     return user != null ? user.email : null;
   }
 
-  Future<String> signInWithGoogle() async {}
+  Future<String> signInWithGoogle() async {
+      return null;
+  }
   void signOutGoogle() async {}
+  
 }
 
 class Auth implements BaseAuth {
@@ -122,11 +125,11 @@ class Auth implements BaseAuth {
     return user.isEmailVerified;
   }
 
-  signInWithOTP(smsCode, verId) {
-    AuthCredential authCreds = PhoneAuthProvider.getCredential(
-        verificationId: verId, smsCode: smsCode);
-    signIn(verId, smsCode);
-  }
+  // signInWithOTP(smsCode, verId) {
+  //   AuthCredential authCreds = PhoneAuthProvider.getCredential(
+  //       verificationId: verId, smsCode: smsCode);
+  //   signIn(verId, smsCode);
+  // }
 
   Future<String> signInWithGoogle() async {
     final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();

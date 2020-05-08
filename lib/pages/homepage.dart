@@ -282,8 +282,8 @@ class _HomePageState extends State<HomePage> {
                       fit: BoxFit.fill,
                     ),
                   ),
-                  Container(
-                      height: 10, width: 50, color: Color(aColor ?? 4281778476))
+                  // Container(
+                  //     height: 10, width: 50, color: Color(aColor ?? 4281778476))
                 ],
               ),
             ),

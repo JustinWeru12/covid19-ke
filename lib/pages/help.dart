@@ -451,6 +451,142 @@ class _HelpPageState extends State<HelpPage> {
     });
   }
 
+  Widget _adminButton() {
+    return Column(
+      children: <Widget>[
+        Container(
+          padding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
+          child: Text(
+            'You are registered with admin privileges, you are mandated with responsibilities to update data for all users.\nYou can also register another user as an Administrator',
+            style: TextStyle(fontFamily: 'Roboto', fontSize: 16.0),
+            textAlign: TextAlign.center,
+          ),
+        ),
+        SizedBox(height: 10.0),
+        Container(
+          width: 300.0,
+          child: RaisedButton(
+            onPressed: () {
+              addAdmin();
+            },
+            padding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
+            child: Center(
+              child: Padding(
+                padding: EdgeInsets.all(10.0),
+                child: Text(
+                  "ADD ADMIN",
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16.0),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<bool> addAdmin() async {
+    Size size = MediaQuery.of(context).size;
+    return showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(20.0))),
+            backgroundColor: Colors.white,
+            title: Text(
+              'Enter the User\'s Email',
+              style: TextStyle(
+                  fontSize: 15.0,
+                  fontFamily: 'Roboto',
+                  fontWeight: FontWeight.normal,
+                  fontStyle: FontStyle.normal),
+              textAlign: TextAlign.center,
+            ),
+            content: Container(
+              width: size.width * 0.7,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Form(
+                      key: _formKey,
+                      child: TextFormField(
+                        style: TextStyle(
+                            fontFamily: "WorkSansSemiBold",
+                            fontSize: 16.0,
+                            color: Colors.black),
+                        autofocus: false,
+                        decoration: new InputDecoration(
+                          contentPadding:
+                              EdgeInsets.fromLTRB(15.0, 0.0, 10.0, 0.0),
+                          labelText: 'Email',
+                          hintText: 'name@example.com',
+                          hintStyle: TextStyle(
+                              fontFamily: "WorkSansSemiLight",
+                              fontSize: 17.0,
+                              fontStyle: FontStyle.italic),
+                          border: new OutlineInputBorder(
+                            borderRadius: new BorderRadius.circular(5.0),
+                            borderSide: new BorderSide(),
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value.isEmpty)
+                            return 'Please Enter an Email';
+                          else if (!RegExp(
+                                  r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
+                              .hasMatch(value)) {
+                            return 'Please Enter a Valid Email';
+                          } else {
+                            return null; // print(_email);
+                          }
+                        },
+                        controller: email,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: RaisedButton(
+                      color: Theme.of(context).accentColor,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.0)),
+                      child: Text(
+                        'Add Admin',
+                        style: TextStyle(
+                            fontSize: 15.0, fontWeight: FontWeight.bold),
+                      ),
+                      textColor: Colors.white,
+                      onPressed: () {
+                        String _email = email.text.toString();
+                        if (_formKey.currentState.validate()) {
+                          _formKey.currentState.save();
+                          Firestore.instance
+                              .collection('user')
+                              .where('email', isEqualTo: _email)
+                              .getDocuments()
+                              .then((querySnapshot) {
+                            querySnapshot.documents.forEach((documentSnapshot) {
+                              documentSnapshot.reference
+                                  .updateData({'admin': true});
+                            });
+                          });
+                          Navigator.of(context).pop();
+                          print(_email);
+                        }
+                      },
+                    ),
+                  )
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
@@ -496,6 +632,9 @@ class _HelpPageState extends State<HelpPage> {
                   _buildGetInTouch(context),
                   SizedBox(height: 8.0),
                   _buildButtons(),
+                  myAdmin == true ? _buildSeparator(screenSize) : Container(),
+                  SizedBox(height: 10.0),
+                  myAdmin == true ? _adminButton() : Container(),
                 ],
               ),
             ),

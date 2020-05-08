@@ -43,12 +43,14 @@ class _RootPageState extends State<RootPage> {
     widget.auth.getCurrentUser().then((user) {
       setState(() {
         _userId = user.uid.toString();
+         authStatus = AuthStatus.LOGGED_IN;
+        Navigator.of(context).pushReplacementNamed('/');
               });
     });
     setState(() {
       crudObj.getDataFromUserFromDocument().then((value) {
         authStatus = AuthStatus.LOGGED_IN;
-        Navigator.of(context).pushReplacementNamed('/');
+        // Navigator.of(context).pushReplacementNamed('/');
       });
     });
   }
@@ -65,11 +67,15 @@ class _RootPageState extends State<RootPage> {
     return Scaffold(
       body: Container(
         alignment: Alignment.center,
-        child: CircleAvatar(
-                backgroundColor: Colors.transparent,
-                radius: 70.0,
-                child: Image.asset('assets/icons/icon.png'),
-              ),
+        child: Column(
+          children: <Widget>[
+            CircleAvatar(
+                    backgroundColor: Colors.transparent,
+                    radius: 70.0,
+                    child: Image.asset('assets/icons/icon.png'),
+                  ),
+          ],
+        ),
       ),
     );
   }

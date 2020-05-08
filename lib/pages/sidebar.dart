@@ -1,6 +1,3 @@
-// import 'dart:html';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:covid19/pages/info_screen.dart';
 import 'package:covid19/services/authentication.dart';
 import 'package:covid19/services/crud.dart';
@@ -33,7 +30,6 @@ class _SideBarState extends State<SideBar> {
   CrudMethods crudObj = new CrudMethods();
   String userMail;
   String _fullNames;
-  String _lastNames;
   String profilPicture;
   String image;
   @override
@@ -45,7 +41,6 @@ class _SideBarState extends State<SideBar> {
         userId = dataMap['userId'];
         userMail = dataMap['email'];
         _fullNames = dataMap['fullNames'];
-        _lastNames = dataMap['last_name'];
         profilPicture = dataMap['picture'];
       });
     });
@@ -96,8 +91,9 @@ class _SideBarState extends State<SideBar> {
             ),
             decoration: new BoxDecoration(
                 image: new DecorationImage(
-                    image: new NetworkImage(
-                        "https://firebasestorage.googleapis.com/v0/b/covid19-ke-80e90.appspot.com/o/landscape.png?alt=media&token=893eebff-69da-4be5-8bd4-4f5eb048415e"),
+                    image: AssetImage("assets/images/landscape.png"),
+                    // new NetworkImage(
+                    //     "https://firebasestorage.googleapis.com/v0/b/covid19-ke-80e90.appspot.com/o/landscape.png?alt=media&token=893eebff-69da-4be5-8bd4-4f5eb048415e"),
                     fit: BoxFit.fill)),
           ),
           ListTile(
@@ -128,8 +124,7 @@ class _SideBarState extends State<SideBar> {
           divider(),
           ListTile(
             leading: Icon(Icons.map, color: kPrimaryColor),
-            title: Text('Map',
-                style: TextStyle(fontWeight: FontWeight.bold)),
+            title: Text('Map', style: TextStyle(fontWeight: FontWeight.bold)),
             onTap: () => {
               Navigator.of(context).pop(),
               Navigator.pushReplacementNamed(context, '/map'),
@@ -166,6 +161,46 @@ class _SideBarState extends State<SideBar> {
               Navigator.of(context).pushReplacementNamed('/');
             },
           ),
+          Stack(
+            children: <Widget>[
+              Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    height: 200.0,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage("assets/images/virus.png"),
+                      ),
+                    ),
+                  )),
+              Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Transform.rotate(
+                    angle: 60.0,
+                    child: Container(
+                      height: 130.0,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage("assets/images/virus.png"),
+                        ),
+                      ),
+                    ),
+                  )),
+              Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Transform.rotate(
+                    angle: 30.0,
+                    child: Container(
+                      height: 260.0,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage("assets/images/virus.png"),
+                        ),
+                      ),
+                    ),
+                  )),
+            ],
+          )
         ],
       ),
     );

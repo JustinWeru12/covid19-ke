@@ -39,7 +39,7 @@ class MapPageState extends State<MapPage> {
   BitmapDescriptor pinLocationIcon;
   Set<Marker> _markers = {};
   Completer<GoogleMapController> _controller = Completer();
-  BehaviorSubject<double> radis = BehaviorSubject<double>.seeded(100.0);
+  BehaviorSubject<double> radis = BehaviorSubject<double>.seeded(1.0);
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   Stream<dynamic> query;
   // StreamSubscription<List<DocumentSnapshot>> subscription;
@@ -55,7 +55,6 @@ class MapPageState extends State<MapPage> {
   double zoomSize = 10;
   double tiltAngle = 80;
   double bearingAngle = 30;
-  int _circleIdCounter = 1;
   DateTime date;
   CrudMethods crudObj = new CrudMethods();
   var pos;
@@ -137,17 +136,17 @@ class MapPageState extends State<MapPage> {
     }
   }
 
-  void _setCircles(LatLng point) {
-    final String circleIdVal = 'case_id_$_circleIdCounter';
-    _circleIdCounter++;
-    _circles.add(Circle(
-        circleId: CircleId(circleIdVal),
-        center: point,
-        radius: radius,
-        fillColor: kDeathColor.withOpacity(0.7),
-        strokeWidth: 3,
-        strokeColor: kDeathColor));
-  }
+  // void _setCircles(LatLng point) {
+  //   final String circleIdVal = 'case_id_$_circleIdCounter';
+  //   _circleIdCounter++;
+  //   _circles.add(Circle(
+  //       circleId: CircleId(circleIdVal),
+  //       center: point,
+  //       radius: radius,
+  //       fillColor: kDeathColor.withOpacity(0.7),
+  //       strokeWidth: 3,
+  //       strokeColor: kDeathColor));
+  // }
 
   addToList() async {
     GeoFirePoint point = geo.point(
@@ -171,12 +170,8 @@ class MapPageState extends State<MapPage> {
     stream = radis.switchMap((rad) {
       var collectionReference = Firestore.instance.collection('markers');
       return geo.collection(collectionRef: collectionReference).within(
-          center: center, radius: rad, field: 'location', strictMode: true);
+          center: center, radius: 1, field: 'location', strictMode: true);
     });
-  }
-
-  void _updateColors(List<DocumentSnapshot> documentList) {
-    crudObj.createOrUpdateUserData({'aColor': 4294920264});
   }
 
   @override

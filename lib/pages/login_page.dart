@@ -189,6 +189,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage>
                   .hasMatch(value)) {
             return 'Enter a valid email';
           }
+            return null;
         },
         onSaved: (value) => _email = value,
       ),
@@ -220,6 +221,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage>
           if (value.isEmpty) {
             return 'Enter your Name';
           }
+            return null;
         },
         onSaved: (value) => _fullNames = value,
       ),
@@ -253,6 +255,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage>
           if (value.isEmpty || value.length < 6) {
             return 'Enter a minimum of 6 characters';
           }
+            return null;
         },
         onSaved: (value) => _password = value,
       ),
@@ -283,6 +286,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage>
           if (_passwordTextController.text != value) {
             return 'Passwords don\'t correspond';
           }
+          return null;
         },
       ),
     );
@@ -302,8 +306,8 @@ class _LoginSignUpPageState extends State<LoginSignUpPage>
               DatePicker.showDatePicker(
                 context,
                 showTitleActions: true,
-                minTime: DateTime(1960, 1, 1),
-                maxTime: DateTime(2009, 1, 1),
+                minTime: DateTime(1940, 1, 1),
+                maxTime: DateTime(2009, 12, 31),
                 onConfirm: (date) {
                   setState(() {
                     dob = date;

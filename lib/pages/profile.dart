@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:covid19/pages/sidebar.dart';
 import 'package:covid19/style/theme.dart';
-import 'package:dropdown_formfield/dropdown_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:covid19/services/authentication.dart';
 import 'package:covid19/services/crud.dart';
@@ -48,18 +47,18 @@ class _UserProfilState extends State<UserProfil> {
   String dob;
   String myAddress;
   String myPcode;
-  bool _notificationValue = true;
+  // bool _notificationValue = true;
 
   final _formKey = GlobalKey<FormState>();
 
   _UserProfilState(this.myAddress);
 
-  void _onChangedNotification(bool value) {
-    setState(() {
-      _notificationValue = value;
-    });
-    crudObj.createOrUpdateUserData({'notification': _notificationValue});
-  }
+  // void _onChangedNotification(bool value) {
+  //   setState(() {
+  //     _notificationValue = value;
+  //   });
+  //   crudObj.createOrUpdateUserData({'notification': _notificationValue});
+  // }
 
   void initState() {
     super.initState();
@@ -79,7 +78,7 @@ class _UserProfilState extends State<UserProfil> {
       setState(() {
         _fullNames = dataMap['name'];
         profilPicture = dataMap['picture'];
-        _notificationValue = dataMap['notification'];
+        // _notificationValue = dataMap['notification'];
         myAddress = dataMap['address'];
         myPcode = dataMap['postalCode'];
       });
@@ -129,14 +128,14 @@ class _UserProfilState extends State<UserProfil> {
     if ((value.length < 7) ||
         !value.contains('-') ||
         !RegExp(r"^\d{1,4}(?:[-\s]\d{5})?$").hasMatch(value))
-      return 'Enter a valid Address in the form 123-98765';
+      return 'Enter a valid Address\n in the form 123-98765';
     else
       return null;
   }
 
-  String validatePostalCode(String value) {
-    if (value.length < 5)
-      return 'Enter a valid Postal Code';
+  String validateName(String value) {
+    if (!value.contains(' ') ||(value.length < 5))
+      return 'Enter a Full Name';
     else
       return null;
   }
@@ -232,6 +231,7 @@ class _UserProfilState extends State<UserProfil> {
                               decoration:
                                   InputDecoration(hintText: 'Full Names'),
                               onSaved: (value) => _fullNames = value,
+                              validator: validateName,
                             ),
                           ),
                           Padding(
@@ -304,6 +304,7 @@ class _UserProfilState extends State<UserProfil> {
                               decoration: InputDecoration(hintText: 'Phone No'),
                               keyboardType: TextInputType.number,
                               onSaved: (value) => _phone = value,
+                              validator: validatePhone,
                             ),
                           ),
                           Padding(
@@ -448,24 +449,24 @@ class _UserProfilState extends State<UserProfil> {
       );
     }
 
-    Widget notification() {
-      return ListTile(
-        leading: Icon(
-          Icons.notifications,
-          color: Colors.blue,
-          size: 35,
-        ),
-        title: Text(
-          "Notification",
-          style: TextStyle(color: Colors.black, fontSize: 18.0),
-        ),
-        trailing: Switch(
-          value: _notificationValue,
-          onChanged: _onChangedNotification,
-          activeColor: Colors.lightBlueAccent,
-        ),
-      );
-    }
+    // Widget notification() {
+    //   return ListTile(
+    //     leading: Icon(
+    //       Icons.notifications,
+    //       color: Colors.blue,
+    //       size: 35,
+    //     ),
+    //     title: Text(
+    //       "Notification",
+    //       style: TextStyle(color: Colors.black, fontSize: 18.0),
+    //     ),
+    //     trailing: Switch(
+    //       value: _notificationValue,
+    //       onChanged: _onChangedNotification,
+    //       activeColor: Colors.lightBlueAccent,
+    //     ),
+    //   );
+    // }
 
     return Padding(
       padding: EdgeInsets.only(top: 5.0),
