@@ -590,56 +590,62 @@ class _HelpPageState extends State<HelpPage> {
   @override
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
-    return Scaffold(
-      drawer: SideBar(
-        logoutCallback: widget._signOut,
-      ),
-      appBar: new AppBar(
-        title: Text(
-          'Get in Touch',
-          style: kAppBarstyle,
+    return new WillPopScope(
+      onWillPop: () {
+        Navigator.pushReplacementNamed(context, '/');
+        return null;
+      },
+      child: Scaffold(
+        drawer: SideBar(
+          logoutCallback: widget._signOut,
         ),
-        centerTitle: true,
-        iconTheme: new IconThemeData(color: Colors.green),
-        elevation: 0.0,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-              gradient: LinearGradient(
-            begin: Alignment.topRight,
-            end: Alignment.bottomLeft,
-            colors: [
-              Color(0xFF3383CD),
-              Color(0xFF11249F),
-            ],
-          )),
+        appBar: new AppBar(
+          title: Text(
+            'Get in Touch',
+            style: kAppBarstyle,
+          ),
+          centerTitle: true,
+          iconTheme: new IconThemeData(color: Colors.green),
+          elevation: 0.0,
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+                gradient: LinearGradient(
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
+              colors: [
+                Color(0xFF3383CD),
+                Color(0xFF11249F),
+              ],
+            )),
+          ),
         ),
-      ),
-      body: Stack(
-        children: <Widget>[
-          _buildCoverImage(screenSize),
-          SafeArea(
-            child: SingleChildScrollView(
-              child: Column(
-                children: <Widget>[
-                  SizedBox(height: screenSize.height / 6.4),
-                  _buildProfileImage(),
-                  _buildFullName(),
-                  _buildStatus(context),
-                  _buildStatContainer(),
-                  _buildBio(context),
-                  _buildSeparator(screenSize),
-                  SizedBox(height: 10.0),
-                  _buildGetInTouch(context),
-                  SizedBox(height: 8.0),
-                  _buildButtons(),
-                  myAdmin == true ? _buildSeparator(screenSize) : Container(),
-                  SizedBox(height: 10.0),
-                  myAdmin == true ? _adminButton() : Container(),
-                ],
+        body: Stack(
+          children: <Widget>[
+            _buildCoverImage(screenSize),
+            SafeArea(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    SizedBox(height: screenSize.height / 6.4),
+                    _buildProfileImage(),
+                    _buildFullName(),
+                    _buildStatus(context),
+                    _buildStatContainer(),
+                    _buildBio(context),
+                    _buildSeparator(screenSize),
+                    SizedBox(height: 10.0),
+                    _buildGetInTouch(context),
+                    SizedBox(height: 8.0),
+                    _buildButtons(),
+                    myAdmin == true ? _buildSeparator(screenSize) : Container(),
+                    SizedBox(height: 10.0),
+                    myAdmin == true ? _adminButton() : Container(),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

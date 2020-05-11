@@ -1,4 +1,6 @@
+import 'package:covid19/RouteObserver.dart';
 import 'package:covid19/pages/help.dart';
+import 'package:covid19/pages/info_screen.dart';
 import 'package:covid19/pages/map.dart';
 import 'package:covid19/pages/profile.dart';
 import 'package:covid19/pages/rootpage.dart';
@@ -15,10 +17,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Covid 19',
+      navigatorObservers: [MyRouteObserver()],
       initialRoute: '/',
         routes: {
           '/root': (context) => RootPage(),
           '/map' : (context) => MapPage(),
+          '/info' : (context) => InfoScreen(),
           '/help': (context) => HelpPage(),
           '/profile': (context) => UserProfil(onSignOut: () {},),
         },

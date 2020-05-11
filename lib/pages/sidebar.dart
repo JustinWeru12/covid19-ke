@@ -111,14 +111,7 @@ class _SideBarState extends State<SideBar> {
                 style: TextStyle(fontWeight: FontWeight.bold)),
             onTap: () => {
               Navigator.of(context).pop(),
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return InfoScreen();
-                  },
-                ),
-              ),
+              Navigator.pushReplacementNamed(context, '/info'),
             },
           ),
           divider(),

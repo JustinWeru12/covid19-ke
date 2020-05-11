@@ -545,78 +545,84 @@ class _UserProfilState extends State<UserProfil> {
 
   Widget pageConstruct(userData, context) {
     Size size = MediaQuery.of(context).size;
-    return Scaffold(
-      drawer: SideBar(
-        logoutCallback: widget._signOut,
-      ),
-      backgroundColor: Colors.white.withOpacity(0.0),
-      resizeToAvoidBottomPadding: false,
-      body: Stack(
-        children: <Widget>[
-           Container(
-                width: size.width,
-                height: size.height,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage('assets/images/Covid19.png'),
-                    fit: BoxFit.cover,
+    return new WillPopScope(
+      onWillPop: () {
+        Navigator.pushReplacementNamed(context, '/');
+        return null;
+      },
+      child: Scaffold(
+        drawer: SideBar(
+          logoutCallback: widget._signOut,
+        ),
+        backgroundColor: Colors.white.withOpacity(0.0),
+        resizeToAvoidBottomPadding: false,
+        body: Stack(
+          children: <Widget>[
+             Container(
+                  width: size.width,
+                  height: size.height,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('assets/images/Covid19.png'),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 0.0, sigmaY: 0.0),
+                    child: Container(
+                      color: Colors.black.withOpacity(0.5),
+                    ),
                   ),
                 ),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 0.0, sigmaY: 0.0),
-                  child: Container(
-                    color: Colors.black.withOpacity(0.5),
-                  ),
-                ),
-              ),
-          CustomScrollView(
-            slivers: <Widget>[
-              SliverAppBar(
-                floating: true,
-                pinned: true,
-                centerTitle: true,
-                backgroundColor: Colors.white.withOpacity(0.7),
-                iconTheme: IconThemeData(color: Theme.of(context).primaryColor),
-                flexibleSpace: FlexibleSpaceBar(
-                  title: userData['fullNames'] == ""
-                      ? Text(userMail)
-                      : Text(
-                          userData['fullNames'],
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 30,
-                              color: Theme.of(context).primaryColor),
-                          textAlign: TextAlign.center,
-                        ),
+            CustomScrollView(
+              slivers: <Widget>[
+                SliverAppBar(
+                  floating: true,
+                  pinned: true,
                   centerTitle: true,
+                  backgroundColor: Colors.white.withOpacity(0.7),
+                  iconTheme: IconThemeData(color: Theme.of(context).primaryColor),
+                  flexibleSpace: FlexibleSpaceBar(
+                    title: userData['fullNames'] == ""
+                        ? Text(userMail)
+                        : Text(
+                            userData['fullNames'],
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 30,
+                                color: Theme.of(context).primaryColor),
+                            textAlign: TextAlign.center,
+                          ),
+                    centerTitle: true,
+                  ),
                 ),
-              ),
-              SliverList(
-                delegate: SliverChildListDelegate(
-                  [
-                    Container(
-                      child: userInfoTopSection(userData),
-                    ),
-                    Container(
-                      child: userBottomSection(userData),
-                    ),
-                    // Container(
-                    //   height: 10,
-                    // ),
-                    // Container(
-                    //   child: FlatButton(
-                    //       onPressed: () {
-                    //         widget._signOut();
-                    //         Navigator.pushReplacementNamed(context, '/');
-                    //       },
-                    //       child: Text("Log out")),
-                    // ),
-                  ],
+                SliverList(
+                  delegate: SliverChildListDelegate(
+                    [
+                      Container(
+                        child: userInfoTopSection(userData),
+                      ),
+                      Container(
+                        child: userBottomSection(userData),
+                      ),
+                      // Container(
+                      //   height: 10,
+                      // ),
+                      // Container(
+                      //   child: FlatButton(
+                      //       onPressed: () {
+                      //         widget._signOut();
+                      //         Navigator.pushReplacementNamed(context, '/');
+                      //       },
+                      //       child: Text("Log out")),
+                      // ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

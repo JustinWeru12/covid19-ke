@@ -53,8 +53,8 @@ class _HomePageState extends State<HomePage> {
     crudObj.getData().then((value) {
       Map<String, dynamic> dataMap = value.data;
       setState(() {
-       var dates = dataMap['upDate'].toDate();
-       date =new DateFormat.yMMMd().format(dates);
+        var dates = dataMap['upDate'].toDate();
+        date = new DateFormat.yMMMd().format(dates);
         print(new DateFormat.yMMMd().format(dates));
       });
     });
@@ -76,9 +76,15 @@ class _HomePageState extends State<HomePage> {
   void updateColor() {
     if (DateTime.now().millisecondsSinceEpoch - colorDate > 1814400000) {
       if (aColor == 4294920264) {
-        crudObj.createOrUpdateUserData({'aColor': 4294936392,'date':DateTime.now().millisecondsSinceEpoch});
+        crudObj.createOrUpdateUserData({
+          'aColor': 4294936392,
+          'date': DateTime.now().millisecondsSinceEpoch
+        });
       } else if (aColor == 4294936392) {
-        crudObj.createOrUpdateUserData({'aColor': 4281778476, 'date':DateTime.now().millisecondsSinceEpoch});
+        crudObj.createOrUpdateUserData({
+          'aColor': 4281778476,
+          'date': DateTime.now().millisecondsSinceEpoch
+        });
       }
     }
   }
@@ -106,314 +112,318 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      drawer: SideBar(
-        logoutCallback: widget._signOut,
-      ),
-      appBar: new AppBar(
-        title: Text(
-          'Home',
-          style: kAppBarstyle,
+    return WillPopScope(
+      onWillPop: _onBackPressed,
+      child: Scaffold(
+        drawer: SideBar(
+          logoutCallback: widget._signOut,
         ),
-        centerTitle: true,
-        iconTheme: new IconThemeData(color: Colors.green),
-        elevation: 0.0,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-              gradient: LinearGradient(
-            begin: Alignment.topRight,
-            end: Alignment.bottomLeft,
-            colors: [
-              Color(0xFF3383CD),
-              Color(0xFF11249F),
-            ],
-          )),
+        appBar: new AppBar(
+          title: Text(
+            'Home',
+            style: kAppBarstyle,
+          ),
+          centerTitle: true,
+          iconTheme: new IconThemeData(color: Colors.green),
+          elevation: 0.0,
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+                gradient: LinearGradient(
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
+              colors: [
+                Color(0xFF3383CD),
+                Color(0xFF11249F),
+              ],
+            )),
+          ),
         ),
-      ),
-      body: SingleChildScrollView(
-        controller: controller,
-        child: Column(
-          children: <Widget>[
-            MyHeader(
-              image: "assets/icons/Drcorona.svg",
-              textTop: "All you need is",
-              textBottom: "to stay at home.",
-              offset: offset,
-            ),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 20),
-              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-              height: 60,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(25),
-                border: Border.all(
-                  color: Color(0xFFE5E5E5),
+        body: SingleChildScrollView(
+          controller: controller,
+          child: Column(
+            children: <Widget>[
+              MyHeader(
+                image: "assets/icons/Drcorona.svg",
+                textTop: "All you need is",
+                textBottom: "to stay at home.",
+                offset: offset,
+              ),
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 20),
+                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                height: 60,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(25),
+                  border: Border.all(
+                    color: Color(0xFFE5E5E5),
+                  ),
+                ),
+                child: Row(
+                  children: <Widget>[
+                    SvgPicture.asset("assets/icons/maps-and-flags.svg"),
+                    SizedBox(width: 20),
+                    Expanded(
+                      child: DropdownButton(
+                        isExpanded: true,
+                        underline: SizedBox(),
+                        icon: SvgPicture.asset("assets/icons/dropdown.svg"),
+                        value: listVal,
+                        items: ['Kenya', 'Africa', 'United States', 'Italy']
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          // setState(() {
+                          //   listVal = value;
+                          // });
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              child: Row(
-                children: <Widget>[
-                  SvgPicture.asset("assets/icons/maps-and-flags.svg"),
-                  SizedBox(width: 20),
-                  Expanded(
-                    child: DropdownButton(
-                      isExpanded: true,
-                      underline: SizedBox(),
-                      icon: SvgPicture.asset("assets/icons/dropdown.svg"),
-                      value: listVal,
-                      items: ['Kenya', 'Africa', 'United States', 'Italy']
-                          .map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        // setState(() {
-                        //   listVal = value;
-                        // });
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 20),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      RichText(
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: "Public Safety Level\n",
-                              style: kTitleTextstyle,
-                            ),
-                            TextSpan(
-                              text: " ",
-                              style: TextStyle(
-                                color: kTextLightColor,
+              SizedBox(height: 20),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: <Widget>[
+                    Row(
+                      children: <Widget>[
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: "Public Safety Level\n",
+                                style: kTitleTextstyle,
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Spacer(),
-                      Text(
-                        "See details",
-                        style: TextStyle(
-                          color: kPrimaryColor,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                  myColor(),
-                  SizedBox(height: 20),
-                  Row(
-                    children: <Widget>[
-                      RichText(
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: "Case Update\n",
-                              style: kTitleTextstyle,
-                            ),
-                            TextSpan(
-                              text: "Latest update: " + date.toString(),
-                              style: TextStyle(
-                                color: kTextLightColor,
+                              TextSpan(
+                                text: " ",
+                                style: TextStyle(
+                                  color: kTextLightColor,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      Spacer(),
-                      Text(
-                        "See details",
-                        style: TextStyle(
-                          color: kPrimaryColor,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 20),
-                  cases(),
-                  SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text(
-                        "Spread of Virus",
-                        style: kTitleTextstyle,
-                      ),
-                      Text(
-                        "See details",
-                        style: TextStyle(
-                          color: kPrimaryColor,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(top: 20),
-                    padding: EdgeInsets.all(20),
-                    height: 250,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          offset: Offset(0, 10),
-                          blurRadius: 30,
-                          color: kShadowColor,
+                        Spacer(),
+                        Text(
+                          "See details",
+                          style: TextStyle(
+                            color: kPrimaryColor,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ],
                     ),
-                    child: Image.asset(
-                      "assets/images/global.png",
-                      fit: BoxFit.fill,
+                    myColor(),
+                    SizedBox(height: 20),
+                    Row(
+                      children: <Widget>[
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: "Case Update\n",
+                                style: kTitleTextstyle,
+                              ),
+                              TextSpan(
+                                text: "Latest update: " + date.toString(),
+                                style: TextStyle(
+                                  color: kTextLightColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Spacer(),
+                        Text(
+                          "See details",
+                          style: TextStyle(
+                            color: kPrimaryColor,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  // Container(
-                  //     height: 10, width: 50, color: Color(aColor ?? 4281778476))
-                ],
+                    SizedBox(height: 20),
+                    cases(),
+                    SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(
+                          "Spread of Virus",
+                          style: kTitleTextstyle,
+                        ),
+                        Text(
+                          "See details",
+                          style: TextStyle(
+                            color: kPrimaryColor,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(top: 20),
+                      padding: EdgeInsets.all(20),
+                      height: 250,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            offset: Offset(0, 10),
+                            blurRadius: 30,
+                            color: kShadowColor,
+                          ),
+                        ],
+                      ),
+                      child: Image.asset(
+                        "assets/images/global.png",
+                        fit: BoxFit.fill,
+                      ),
+                    ),
+                    // Container(
+                    //     height: 10, width: 50, color: Color(aColor ?? 4281778476))
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        floatingActionButton: Row(
+          children: <Widget>[
+            SizedBox(
+              width: 50.0,
+            ),
+            Align(
+              alignment: Alignment.bottomLeft,
+              child: FloatingActionButton(
+                backgroundColor: kDeathColor,
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          backgroundColor: Colors.white.withOpacity(0.85),
+                          shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(20.0))),
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Text(
+                                "These values will be updated as the current number of Covid-19 cases in the country as of this moment.\n\n If you are sure these are true Proceed,\n else please Cancel",
+                                style: TextStyle(color: Colors.black),
+                                textAlign: TextAlign.center,
+                              ),
+                              Form(
+                                  key: _formKey,
+                                  child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: <Widget>[
+                                        Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: TextFormField(
+                                            keyboardType: TextInputType.number,
+                                            initialValue: infected.toString(),
+                                            validator: validateInfected,
+                                            decoration: InputDecoration(
+                                                labelText: 'Infected:'),
+                                            onSaved: (value) =>
+                                                infected = int.tryParse(value),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: TextFormField(
+                                            validator: validateDeaths,
+                                            initialValue: dead.toString(),
+                                            keyboardType: TextInputType.number,
+                                            decoration: InputDecoration(
+                                                labelText: 'Deaths:'),
+                                            onSaved: (value) =>
+                                                dead = int.tryParse(value),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: TextFormField(
+                                            keyboardType: TextInputType.number,
+                                            initialValue: recovered.toString(),
+                                            validator: validateRecovered,
+                                            decoration: InputDecoration(
+                                                labelText: 'Recovered:'),
+                                            onSaved: (value) =>
+                                                recovered = int.tryParse(value),
+                                          ),
+                                        ),
+                                      ])),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: RaisedButton(
+                                      color: kDeathColor,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(20.0))),
+                                      child: Text(
+                                        "Proceed",
+                                        style: TextStyle(color: Colors.black),
+                                      ),
+                                      onPressed: () {
+                                        if (_formKey.currentState.validate()) {
+                                          _formKey.currentState.save();
+                                          crudObj.updateData({
+                                            'infected': infected,
+                                            'dead': dead,
+                                            'recovered': recovered,
+                                            'upDate': DateTime.now()
+                                          });
+                                          Navigator.of(context).pop();
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: RaisedButton(
+                                      color: kRecovercolor,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(20.0))),
+                                      child: Text(
+                                        "Cancel",
+                                        style: TextStyle(color: Colors.black),
+                                      ),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        );
+                      });
+                },
+                tooltip: 'Increment',
+                child: Icon(Icons.add),
               ),
             ),
           ],
         ),
-      ),
-      floatingActionButton: Row(
-        children: <Widget>[
-          SizedBox(
-            width: 50.0,
-          ),
-          Align(
-            alignment: Alignment.bottomLeft,
-            child: FloatingActionButton(
-              backgroundColor: kDeathColor,
-              onPressed: () {
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        backgroundColor: Colors.white.withOpacity(0.85),
-                        shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(20.0))),
-                        content: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Text(
-                              "These values will be updated as the current number of Covid-19 cases in the country as of this moment.\n\n If you are sure these are true Proceed,\n else please Cancel",
-                              style: TextStyle(color: Colors.black),
-                              textAlign: TextAlign.center,
-                            ),
-                            Form(
-                                key: _formKey,
-                                child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: <Widget>[
-                                      Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: TextFormField(
-                                          keyboardType: TextInputType.number,
-                                          initialValue: infected.toString(),
-                                          validator: validateInfected,
-                                          decoration: InputDecoration(
-                                              labelText: 'Infected:'),
-                                          onSaved: (value) =>
-                                              infected = int.tryParse(value),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: TextFormField(
-                                          validator: validateDeaths,
-                                          initialValue: dead.toString(),
-                                          keyboardType: TextInputType.number,
-                                          decoration: InputDecoration(
-                                              labelText: 'Deaths:'),
-                                          onSaved: (value) =>
-                                              dead = int.tryParse(value),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: TextFormField(
-                                          keyboardType: TextInputType.number,
-                                          initialValue: recovered.toString(),
-                                          validator: validateRecovered,
-                                          decoration: InputDecoration(
-                                              labelText: 'Recovered:'),
-                                          onSaved: (value) =>
-                                              recovered = int.tryParse(value),
-                                        ),
-                                      ),
-                                    ])),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: <Widget>[
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: RaisedButton(
-                                    color: kDeathColor,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(20.0))),
-                                    child: Text(
-                                      "Proceed",
-                                      style: TextStyle(color: Colors.black),
-                                    ),
-                                    onPressed: () {
-                                      if (_formKey.currentState.validate()) {
-                                        _formKey.currentState.save();
-                                        crudObj.updateData({
-                                          'infected': infected,
-                                          'dead': dead,
-                                          'recovered': recovered,
-                                          'upDate': DateTime.now()
-                                        });
-                                        Navigator.of(context).pop();
-                                      }
-                                    },
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: RaisedButton(
-                                    color: kRecovercolor,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(20.0))),
-                                    child: Text(
-                                      "Cancel",
-                                      style: TextStyle(color: Colors.black),
-                                    ),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
-                      );
-                    });
-              },
-              tooltip: 'Increment',
-              child: Icon(Icons.add),
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -432,8 +442,8 @@ class _HomePageState extends State<HomePage> {
         dead = userData['dead'];
         infected = userData['infected'];
         recovered = userData['recovered'];
-       var dates = userData['upDate'].toDate();
-        date =new DateFormat.yMMMd().format(dates);
+        var dates = userData['upDate'].toDate();
+        date = new DateFormat.yMMMd().format(dates);
         return Container(
           padding: EdgeInsets.all(20),
           decoration: BoxDecoration(
@@ -513,5 +523,66 @@ class _HomePageState extends State<HomePage> {
                   height: 10, width: 10, child: CircularProgressIndicator())
               : Container()
         ]));
+  }
+
+  Future<bool> _onBackPressed() {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            backgroundColor: Colors.white.withOpacity(0.85),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(20.0))),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text(
+                  'Are you sure you want to exit the app!!',
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(
+                  height: 20.0,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: RaisedButton(
+                        color: kDeathColor,
+                        shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(20.0))),
+                        child: Text(
+                          "Proceed",
+                          style: TextStyle(color: Colors.black),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop(true);
+                        },
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: RaisedButton(
+                        color: kRecovercolor,
+                        shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(20.0))),
+                        child: Text(
+                          "Cancel",
+                          style: TextStyle(color: Colors.black),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop(false);
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        });
   }
 }
