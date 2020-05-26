@@ -154,13 +154,13 @@ class _InfoScreenState extends State<InfoScreen> {
                     PreventCard(
                       text:
                           "Maintain at least 1 metre (3 feet) distance between yourself and anyone who is coughing or sneezing. If you are too close, you can breathe in the droplets, including the COVID-19 virus.",
-                      image: "assets/images/wash_hands.png",
+                      image: "assets/images/clear.png",
                       title: "Social Distance",
                     ),
                     PreventCard(
                       text:
                           "Stay at Home. If you have a fever, cough and difficulty breathing, seek medical attention and call in advance. Follow the directions of your local health authority(MOH).",
-                      image: "assets/images/wash_hands.png",
+                      image: "assets/images/stayhome.png",
                       title: "Isolate or Quarantine",
                     ),
                     PreventCard(
@@ -203,12 +203,12 @@ class _PreventCardState extends State<PreventCard> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: SizedBox(
-        height: 156,
+        height: 186,
         child: Stack(
           alignment: Alignment.centerLeft,
           children: <Widget>[
             Container(
-              height: 136,
+              height: 176,
               width: double.infinity,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
